@@ -24,7 +24,8 @@ local Components = {
     ColorPicker = loadstring(game:HttpGet(BASE_URL .. "Components/ColorPicker.lua"))(),
     Keybind = loadstring(game:HttpGet(BASE_URL .. "Components/Keybind.lua"))(),
     Label = loadstring(game:HttpGet(BASE_URL .. "Components/Label.lua"))(),
-    Section = loadstring(game:HttpGet(BASE_URL .. "Components/Section.lua"))()
+    Section = loadstring(game:HttpGet(BASE_URL .. "Components/Section.lua"))(),
+    Divider = loadstring(game:HttpGet(BASE_URL .. "Components/Divider.lua"))()
 }
 
 -- ================================================================
@@ -81,10 +82,14 @@ function AntigravityUI:CreateWindow(options)
     Window.Title = options.Title or "Antigravity UI"
     Window.Size = options.Size or UDim2.new(0, 500, 0, 400)
     Window.Theme = options.Theme or "Dark"
-    Window.GameName = options.GameName or options.Title or "Default"  -- ชื่อ Game สำหรับ Config
-    Window.ConfigName = options.ConfigName or "Config"  -- ชื่อไฟล์ config
+    Window.GameName = options.GameName or options.Title or "Default"
+    Window.ConfigName = options.ConfigName or "Config"
     Window.AutoSave = options.AutoSave or false
     Window.AutoLoad = options.AutoLoad or false
+    Window.Resizable = options.Resizable ~= false  -- Default true
+    Window.MinSize = options.MinSize or UDim2.new(0, 400, 0, 300)
+    Window.MaxSize = options.MaxSize or UDim2.new(0, 900, 0, 700)
+    Window.SaveSize = options.SaveSize ~= false  -- Default true
     Window.Tabs = {}
     Window.ActiveTab = nil
     Window.Minimized = false
@@ -236,6 +241,155 @@ function AntigravityUI:CreateWindow(options)
     Window.ContentContainer.Parent = Window.Container
     
     Utility:MakeDraggable(Window.Container, Window.TitleBar)
+    
+    -- ================================================================
+    -- RESIZE HANDLES
+    -- ================================================================
+    if Window.Resizable then
+        local resizing = false
+        local resizeType = nil
+        local startSize = nil
+        local startPos = nil
+        
+        -- Corner resize handle (bottom-right)
+        Window.ResizeCorner = Instance.new("TextButton")
+        Window.ResizeCorner.Name = "ResizeCorner"
+        Window.ResizeCorner.Size = UDim2.new(0, 20, 0, 20)
+        Window.ResizeCorner.Position = UDim2.new(1, -20, 1, -20)
+        Window.ResizeCorner.BackgroundTransparency = 1
+        Window.ResizeCorner.Text = "⤡"
+        Window.ResizeCorner.TextColor3 = Theme.Current.SubText
+        Window.ResizeCorner.TextSize = 14
+        Window.ResizeCorner.Font = Enum.Font.GothamBold
+        Window.ResizeCorner.ZIndex = 10
+        Window.ResizeCorner.AutoButtonColor = false
+        Window.ResizeCorner.Parent = Window.Container
+        
+        -- Right edge resize handle
+        Window.ResizeRight = Instance.new("TextButton")
+        Window.ResizeRight.Name = "ResizeRight"
+        Window.ResizeRight.Size = UDim2.new(0, 6, 1, -60)
+        Window.ResizeRight.Position = UDim2.new(1, -3, 0, 45)
+        Window.ResizeRight.BackgroundTransparency = 1
+        Window.ResizeRight.Text = ""
+        Window.ResizeRight.ZIndex = 10
+        Window.ResizeRight.AutoButtonColor = false
+        Window.ResizeRight.Parent = Window.Container
+        
+        -- Bottom edge resize handle
+        Window.ResizeBottom = Instance.new("TextButton")
+        Window.ResizeBottom.Name = "ResizeBottom"
+        Window.ResizeBottom.Size = UDim2.new(1, -30, 0, 6)
+        Window.ResizeBottom.Position = UDim2.new(0, 0, 1, -3)
+        Window.ResizeBottom.BackgroundTransparency = 1
+        Window.ResizeBottom.Text = ""
+        Window.ResizeBottom.ZIndex = 10
+        Window.ResizeBottom.AutoButtonColor = false
+        Window.ResizeBottom.Parent = Window.Container
+        
+        -- Resize function
+        local function clampSize(width, height)
+            local minW = Window.MinSize.X.Offset
+            local minH = Window.MinSize.Y.Offset
+            local maxW = Window.MaxSize.X.Offset
+            local maxH = Window.MaxSize.Y.Offset
+            return math.clamp(width, minW, maxW), math.clamp(height, minH, maxH)
+        end
+        
+        local function updateResize(input)
+            if not resizing or not startSize or not startPos then return end
+            
+            local delta = input.Position - startPos
+            local newWidth = startSize.X.Offset
+            local newHeight = startSize.Y.Offset
+            
+            if resizeType == "corner" or resizeType == "right" then
+                newWidth = startSize.X.Offset + delta.X
+            end
+            if resizeType == "corner" or resizeType == "bottom" then
+                newHeight = startSize.Y.Offset + delta.Y
+            end
+            
+            newWidth, newHeight = clampSize(newWidth, newHeight)
+            
+            if Animation then
+                Animation:Play(Window.Container, {Size = UDim2.new(0, newWidth, 0, newHeight)}, 0.05)
+            else
+                Window.Container.Size = UDim2.new(0, newWidth, 0, newHeight)
+            end
+        end
+        
+        local function startResize(rType)
+            return function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+                   input.UserInputType == Enum.UserInputType.Touch then
+                    resizing = true
+                    resizeType = rType
+                    startSize = Window.Container.Size
+                    startPos = input.Position
+                end
+            end
+        end
+        
+        local function endResize(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+               input.UserInputType == Enum.UserInputType.Touch then
+                if resizing and Window.SaveSize then
+                    -- Save size to config
+                    Window.Size = Window.Container.Size
+                    if Window.ConfigHandler and Window.ConfigHandler.AutoSave then
+                        Window.ConfigHandler:TriggerAutoSave()
+                    end
+                end
+                resizing = false
+                resizeType = nil
+                startSize = nil
+                startPos = nil
+            end
+        end
+        
+        -- Connect events
+        Window.ResizeCorner.InputBegan:Connect(startResize("corner"))
+        Window.ResizeRight.InputBegan:Connect(startResize("right"))
+        Window.ResizeBottom.InputBegan:Connect(startResize("bottom"))
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or 
+               input.UserInputType == Enum.UserInputType.Touch then
+                updateResize(input)
+            end
+        end)
+        
+        UserInputService.InputEnded:Connect(endResize)
+        
+        -- Hover effects
+        Window.ResizeCorner.MouseEnter:Connect(function()
+            Window.ResizeCorner.TextColor3 = Theme.Current.Accent
+        end)
+        Window.ResizeCorner.MouseLeave:Connect(function()
+            Window.ResizeCorner.TextColor3 = Theme.Current.SubText
+        end)
+        
+        -- Preset sizes method
+        function Window:SetSize(preset)
+            local sizes = {
+                Small = UDim2.new(0, 400, 0, 300),
+                Medium = UDim2.new(0, 550, 0, 420),
+                Large = UDim2.new(0, 700, 0, 550)
+            }
+            
+            local targetSize = sizes[preset]
+            if targetSize then
+                local w, h = clampSize(targetSize.X.Offset, targetSize.Y.Offset)
+                if Animation then
+                    Animation:Play(Window.Container, {Size = UDim2.new(0, w, 0, h)}, 0.3)
+                else
+                    Window.Container.Size = UDim2.new(0, w, 0, h)
+                end
+                Window.Size = UDim2.new(0, w, 0, h)
+            end
+        end
+    end
     
     -- Floating Icon
     if options.FloatingIcon and options.FloatingIcon.Enabled ~= false then
@@ -404,6 +558,7 @@ function AntigravityUI:CreateWindow(options)
         function Tab:AddKeybind(opts) return Components.Keybind.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
         function Tab:AddLabel(opts) return Components.Label.new(Tab, opts, Theme, Animation) end
         function Tab:AddSection(opts) return Components.Section.new(Tab, opts, Theme, Animation) end
+        function Tab:AddDivider(opts) return Components.Divider.new(Tab, opts, Theme, Animation) end
         
         return Tab
     end
