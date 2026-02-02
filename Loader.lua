@@ -526,29 +526,31 @@ function AntigravityUI:CreateWindow(options)
                             element.Label.TextColor3 = Theme.Current.Text
                         end
                         
-                        -- Toggle specific
-                        if element.ToggleContainer then
-                            element.ToggleContainer.BackgroundColor3 = element.Value and Theme.Current.Accent or Theme.Current.Tertiary
+                        -- Toggle specific (SwitchBg is the toggle background)
+                        if element.SwitchBg then
+                            element.SwitchBg.BackgroundColor3 = element.Value and Theme.Current.Accent or Theme.Current.Tertiary
                         end
                         
-                        -- Slider specific
-                        if element.SliderTrack then
-                            element.SliderTrack.BackgroundColor3 = Theme.Current.Tertiary
+                        -- Slider specific (Track, Fill, ValueLabel)
+                        if element.Track then
+                            element.Track.BackgroundColor3 = Theme.Current.Tertiary
                         end
-                        if element.SliderFill then
-                            element.SliderFill.BackgroundColor3 = Theme.Current.Accent
+                        if element.Fill then
+                            element.Fill.BackgroundColor3 = Theme.Current.Accent
                         end
                         if element.ValueLabel then
                             element.ValueLabel.TextColor3 = Theme.Current.Accent
                         end
                         
-                        -- Dropdown specific
-                        if element.Selected then
-                            element.Selected.BackgroundColor3 = Theme.Current.Tertiary
-                            element.Selected.TextColor3 = Theme.Current.Text
+                        -- Dropdown specific (Button is the dropdown button, SelectedLabel is the text)
+                        if element.Button and element.Button.Name == "DropdownButton" then
+                            element.Button.BackgroundColor3 = Theme.Current.Tertiary
                         end
-                        if element.DropdownContainer then
-                            element.DropdownContainer.BackgroundColor3 = Theme.Current.Tertiary
+                        if element.SelectedLabel then
+                            element.SelectedLabel.TextColor3 = Theme.Current.Text
+                        end
+                        if element.DropdownList then
+                            element.DropdownList.BackgroundColor3 = Theme.Current.Tertiary
                         end
                         
                         -- Keybind specific
