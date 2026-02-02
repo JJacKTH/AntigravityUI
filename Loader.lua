@@ -504,6 +504,7 @@ function AntigravityUI:CreateWindow(options)
         pageLayout.FillDirection = Enum.FillDirection.Vertical
         pageLayout.Padding = UDim.new(0, 8)
         pageLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
         pageLayout.Parent = Tab.Page
         
         local pagePadding = Instance.new("UIPadding")
