@@ -37,7 +37,7 @@ A modern, feature-rich UI library for Roblox Luau scripting.
 
 ```lua
 -- Load library
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Main.lua"))()
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Loader.lua"))()
 
 -- Create window
 local Window = UI:CreateWindow({
@@ -150,7 +150,7 @@ UI Library ที่ทันสมัยและมีฟีเจอร์ค
 
 ```lua
 -- โหลด library
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Main.lua"))()
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Loader.lua"))()
 
 -- สร้างหน้าต่าง
 local Window = UI:CreateWindow({
