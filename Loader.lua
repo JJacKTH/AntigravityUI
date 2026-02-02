@@ -282,10 +282,28 @@ function AntigravityUI:CreateWindow(options)
         Window.ResizeCorner.Size = UDim2.new(0, 20, 0, 20)
         Window.ResizeCorner.Position = UDim2.new(1, -20, 1, -20)
         Window.ResizeCorner.BackgroundTransparency = 1
-        Window.ResizeCorner.Text = "⤡"
-        Window.ResizeCorner.TextColor3 = Theme.Current.SubText
-        Window.ResizeCorner.TextSize = 14
-        Window.ResizeCorner.Font = Enum.Font.GothamBold
+        Window.ResizeCorner.Text = ""
+        Window.ResizeCorner.ZIndex = 11
+        Window.ResizeCorner.Parent = Window.Container
+
+        -- Create resize graphic lines
+        Window.ResizeLine1 = Instance.new("Frame")
+        Window.ResizeLine1.Name = "Line1"
+        Window.ResizeLine1.Size = UDim2.new(0, 6, 0, 2)
+        Window.ResizeLine1.Position = UDim2.new(1, -6, 1, -6)
+        Window.ResizeLine1.BackgroundColor3 = Theme.Current.SubText
+        Window.ResizeLine1.BorderSizePixel = 0
+        Window.ResizeLine1.Rotation = 45 -- -45 or 135 depending on coord system, 45 looks like /
+        Window.ResizeLine1.Parent = Window.ResizeCorner
+
+        Window.ResizeLine2 = Instance.new("Frame")
+        Window.ResizeLine2.Name = "Line2"
+        Window.ResizeLine2.Size = UDim2.new(0, 12, 0, 2)
+        Window.ResizeLine2.Position = UDim2.new(1, -9, 1, -9)
+        Window.ResizeLine2.BackgroundColor3 = Theme.Current.SubText
+        Window.ResizeLine2.BorderSizePixel = 0
+        Window.ResizeLine2.Rotation = 45
+        Window.ResizeLine2.Parent = Window.ResizeCorner
         Window.ResizeCorner.ZIndex = 10
         Window.ResizeCorner.AutoButtonColor = false
         Window.ResizeCorner.Parent = Window.Container
@@ -512,6 +530,14 @@ function AntigravityUI:CreateWindow(options)
                 Window.CloseBtn.TextColor3 = Theme.Current.Text
             end
             
+            -- Resize handle lines
+            if Window.ResizeLine1 then
+                Window.ResizeLine1.BackgroundColor3 = Theme.Current.SubText
+            end
+            if Window.ResizeLine2 then
+                Window.ResizeLine2.BackgroundColor3 = Theme.Current.SubText
+            end
+            
             -- Refresh tab buttons
             for _, tab in ipairs(Window.Tabs) do
                 if tab.Button then
@@ -724,10 +750,15 @@ function AntigravityUI:CreateWindow(options)
         Tab.Button.TextSize = 13
         Tab.Button.Font = Enum.Font.GothamMedium
         Tab.Button.AutoButtonColor = false
+        Tab.Button.TextXAlignment = Enum.TextXAlignment.Left
         Tab.Button.LayoutOrder = Tab.LayoutOrder
         Tab.Button.Parent = Window.TabScroll
         
         Instance.new("UICorner", Tab.Button).CornerRadius = UDim.new(0, 6)
+        
+        local tabPadding = Instance.new("UIPadding")
+        tabPadding.PaddingLeft = UDim.new(0, 10)
+        tabPadding.Parent = Tab.Button
         
         Tab.Page = Instance.new("ScrollingFrame")
         Tab.Page.Name = "Page_" .. Tab.Name
