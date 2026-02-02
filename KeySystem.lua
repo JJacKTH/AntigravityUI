@@ -35,11 +35,12 @@ local Section = KeyTab:AddSection({ Name = "Enter License Key" })
 
 local KeyInput = nil
 
-KeyInput = KeyTab:AddInput({
+KeyInput = KeyTab:AddTextbox({
     Name = "License Key",
     Placeholder = "Paste your key here...",
     Callback = function(text)
-        -- Optional: Auto-check on text change or just store value
+        -- Update the internal key variable when text changes
+        KeyInput.Value = text
     end
 })
 
