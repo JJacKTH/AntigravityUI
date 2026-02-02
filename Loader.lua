@@ -557,7 +557,7 @@ function AntigravityUI:CreateWindow(options)
         function Tab:AddColorPicker(opts) return Components.ColorPicker.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
         function Tab:AddKeybind(opts) return Components.Keybind.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
         function Tab:AddLabel(opts) return Components.Label.new(Tab, opts, Theme, Animation) end
-        function Tab:AddSection(opts) return Components.Section.new(Tab, opts, Theme, Animation) end
+        function Tab:AddSection(opts) return Components.Section.new(Tab, opts, Theme, Animation, Window.ConfigHandler, Components) end
         function Tab:AddDivider(opts) return Components.Divider.new(Tab, opts, Theme, Animation) end
         
         return Tab

@@ -13,12 +13,16 @@ function Divider.new(tab, options, Theme, Animation)
     self.Name = options.Name or "Divider"
     self.Tab = tab
     
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Divider_" .. self.Name
     self.Container.Size = UDim2.new(1, -10, 0, 25)
     self.Container.BackgroundTransparency = 1
     self.Container.BorderSizePixel = 0
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     -- Left line

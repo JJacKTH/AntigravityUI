@@ -104,7 +104,7 @@ local SpeedSection = PlayerTab:AddSection({
     Collapsed = false
 })
 
-PlayerTab:AddToggle({
+SpeedSection:AddToggle({
     Name = "Speed Hack",
     Default = false,
     Flag = "SpeedHack",
@@ -117,7 +117,7 @@ PlayerTab:AddToggle({
     end
 })
 
-PlayerTab:AddSlider({
+SpeedSection:AddSlider({
     Name = "Walk Speed",
     Min = 16,
     Max = 500,

@@ -1,12 +1,16 @@
 --[[
     Antigravity UI Library - Section Component
     Collapsible section for grouping elements
+    รองรับการเพิ่ม components ภายใน Section
 ]]
 
 local Section = {}
 Section.__index = Section
 
-function Section.new(tab, options, Theme, Animation)
+-- Components จะถูก inject จาก Loader
+Section.Components = nil
+
+function Section.new(tab, options, Theme, Animation, ConfigHandler, Components)
     options = options or {}
     
     local self = setmetatable({}, Section)
@@ -14,6 +18,13 @@ function Section.new(tab, options, Theme, Animation)
     self.Collapsed = options.Collapsed or false
     self.Tab = tab
     self.Elements = {}
+    self.Theme = Theme
+    self.Animation = Animation
+    self.ConfigHandler = ConfigHandler
+    self.Components = Components
+    
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
     
     -- Container
     self.Container = Instance.new("Frame")
@@ -23,6 +34,7 @@ function Section.new(tab, options, Theme, Animation)
     self.Container.BackgroundTransparency = 0.5
     self.Container.BorderSizePixel = 0
     self.Container.ClipsDescendants = true
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")
@@ -64,7 +76,7 @@ function Section.new(tab, options, Theme, Animation)
     self.Arrow.Font = Enum.Font.GothamBold
     self.Arrow.Parent = self.Header
     
-    -- Content container
+    -- Content container (สำหรับ components ที่เพิ่มเข้ามา)
     self.Content = Instance.new("Frame")
     self.Content.Name = "Content"
     self.Content.Size = UDim2.new(1, -10, 0, 0)
@@ -75,7 +87,11 @@ function Section.new(tab, options, Theme, Animation)
     local contentLayout = Instance.new("UIListLayout")
     contentLayout.FillDirection = Enum.FillDirection.Vertical
     contentLayout.Padding = UDim.new(0, 5)
+    contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
     contentLayout.Parent = self.Content
+    
+    -- Create a fake "page" object for components to use
+    self.Page = self.Content
     
     -- Auto resize
     self.ContentLayout = contentLayout
@@ -117,6 +133,73 @@ function Section.new(tab, options, Theme, Animation)
     
     function self:Destroy()
         self.Container:Destroy()
+    end
+    
+    -- ================================================================
+    -- ADD COMPONENT METHODS (ให้ใช้ Section:AddToggle() ได้)
+    -- ================================================================
+    function self:AddButton(opts)
+        if not self.Components or not self.Components.Button then return nil end
+        local component = self.Components.Button.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddToggle(opts)
+        if not self.Components or not self.Components.Toggle then return nil end
+        local component = self.Components.Toggle.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddTextbox(opts)
+        if not self.Components or not self.Components.Textbox then return nil end
+        local component = self.Components.Textbox.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddDropdown(opts)
+        if not self.Components or not self.Components.Dropdown then return nil end
+        local component = self.Components.Dropdown.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddSlider(opts)
+        if not self.Components or not self.Components.Slider then return nil end
+        local component = self.Components.Slider.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddColorPicker(opts)
+        if not self.Components or not self.Components.ColorPicker then return nil end
+        local component = self.Components.ColorPicker.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddKeybind(opts)
+        if not self.Components or not self.Components.Keybind then return nil end
+        local component = self.Components.Keybind.new(self, opts, Theme, Animation, ConfigHandler)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
+    end
+    
+    function self:AddLabel(opts)
+        if not self.Components or not self.Components.Label then return nil end
+        local component = self.Components.Label.new(self, opts, Theme, Animation)
+        table.insert(self.Elements, component)
+        self:UpdateSize()
+        return component
     end
     
     -- Initial update
