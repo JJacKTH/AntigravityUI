@@ -10,11 +10,11 @@
 -- ================================================================
 -- LOAD LIBRARY
 -- ================================================================
--- วิธีที่ 1: Load จาก URL (สำหรับ Executor)
--- local AntigravityUI = loadstring(game:HttpGet("YOUR_RAW_URL"))()
+-- วิธีที่ 1: Load จาก GitHub (สำหรับ Executor)
+local AntigravityUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Main.lua"))()
 
 -- วิธีที่ 2: Require จาก ModuleScript (สำหรับ Roblox Studio)
-local AntigravityUI = require(script.Parent.Main)
+-- local AntigravityUI = require(script.Parent.Main)
 
 -- ================================================================
 -- CREATE WINDOW

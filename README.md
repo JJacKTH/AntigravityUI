@@ -29,7 +29,7 @@ A modern, feature-rich UI library for Roblox Luau scripting.
 
 ```lua
 -- Load library
-local UI = loadstring(game:HttpGet("YOUR_RAW_URL"))()
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Main.lua"))()
 
 -- Create window
 local Window = UI:CreateWindow({
