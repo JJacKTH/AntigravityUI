@@ -873,6 +873,9 @@ function AntigravityUI:CreateWindow(options)
         return Tab
     end
     
+    
+    Window.AddTab = Window.CreateTab
+
     Window.MinimizeBtn.MouseButton1Click:Connect(function() Window:Minimize() end)
     Window.CloseBtn.MouseButton1Click:Connect(function() Window:Destroy() end)
     
