@@ -349,27 +349,38 @@ function AntigravityUI:CreateWindow(options)
         
         local matches = {}
         
-        -- Index and search
+        -- Recursive search function
+        local function searchInList(list, parentTab, parentSection)
+            for _, element in ipairs(list) do
+                -- Check string match
+                local name = nil
+                if element.Configs and element.Configs.Name then
+                    name = element.Configs.Name
+                elseif element.Label and element.Label:IsA("TextLabel") then
+                    name = element.Label.Text
+                end
+                
+                if name and string.find(name:lower(), query, 1, true) then
+                    table.insert(matches, {
+                        Name = name,
+                        Type = "Element",
+                        Tab = parentTab,
+                        Section = parentSection, -- Can be nil
+                        Element = element
+                    })
+                end
+                
+                -- Recursive check for container elements (like Sections)
+                if element.Elements then
+                    searchInList(element.Elements, parentTab, element)
+                end
+            end
+        end
+        
+        -- Index and search all tabs
         for _, tab in ipairs(Window.Tabs) do
             if tab.Elements then
-                for _, element in ipairs(tab.Elements) do
-                    -- Check if element has a name/label to search
-                    local name = nil
-                    if element.Configs and element.Configs.Name then
-                        name = element.Configs.Name
-                    elseif element.Label and element.Label:IsA("TextLabel") then
-                        name = element.Label.Text
-                    end
-                    
-                    if name and string.find(name:lower(), query, 1, true) then
-                        table.insert(matches, {
-                            Name = name,
-                            Type = "Element", -- Could be specific like "Toggle", "Button"
-                            Tab = tab,
-                            Element = element
-                        })
-                    end
-                end
+                searchInList(tab.Elements, tab, nil)
             end
         end
         
@@ -377,15 +388,16 @@ function AntigravityUI:CreateWindow(options)
         if #matches > 0 then
             Window.SearchResults.Visible = true
             Window.ClickBlocker.Visible = true
-            Window.SearchResults.Size = UDim2.new(1, -10, 0, math.min(#matches * 35, 200)) -- Auto height
+            Window.SearchResults.Size = UDim2.new(1, -10, 0, math.min(#matches * 35, 200))
             
             for _, match in ipairs(matches) do
                 local btn = Instance.new("TextButton")
                 btn.Name = "ResultBtn"
                 btn.Size = UDim2.new(1, 0, 0, 30)
                 btn.BackgroundColor3 = Theme.Current.Tertiary
-                btn.BackgroundTransparency = 1 -- Transparent initially
-                btn.Text = "  " .. match.Name .. "  (" .. match.Tab.Name .. ")"
+                btn.BackgroundTransparency = 1
+                local locInfo = match.Section and (match.Tab.Name .. " > " .. match.Section.Name) or match.Tab.Name
+                btn.Text = "  " .. match.Name .. "  (" .. locInfo .. ")"
                 btn.TextColor3 = Theme.Current.Text
                 btn.TextSize = 13
                 btn.Font = Enum.Font.Gotham
@@ -395,7 +407,6 @@ function AntigravityUI:CreateWindow(options)
                 
                 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
                 
-                -- Hover effect
                 btn.MouseEnter:Connect(function()
                     Animation:Play(btn, {BackgroundTransparency = 0}, 0.1)
                 end)
@@ -403,18 +414,28 @@ function AntigravityUI:CreateWindow(options)
                     Animation:Play(btn, {BackgroundTransparency = 1}, 0.1)
                 end)
                 
-                -- Click to jump
                 btn.MouseButton1Click:Connect(function()
                     match.Tab:Select()
-                    Window.SearchBar.Text = "" -- Clear search
+                    
+                    -- Expand section if needed
+                    if match.Section and match.Section.SetCollapsed then
+                        match.Section:SetCollapsed(false)
+                    end
+                    
+                    Window.SearchBar.Text = ""
                     Window.SearchResults.Visible = false
                     Window.ClickBlocker.Visible = false
                     
-                    -- Highlight effect on target element
                     if match.Element.Container then
                         local originalColor = match.Element.Container.BackgroundColor3
                         task.spawn(function()
-                            -- Flash
+                            -- Wait briefly for layout update if section was just expanded
+                            task.wait(0.1)
+                             if match.Element.Container.Parent and match.Element.Container.Parent:IsA("ScrollingFrame") then
+                                -- Ideally, we would set CanvasPosition here to scroll to it
+                                -- But that requires calculation. For now, the visual flash is good enough.
+                            end
+                            
                             for i = 1, 3 do
                                 Animation:Play(match.Element.Container, {BackgroundColor3 = Theme.Current.Accent}, 0.2)
                                 task.wait(0.2)
