@@ -494,6 +494,84 @@ function AntigravityUI:CreateWindow(options)
                         tab.Button.TextColor3 = Theme.Current.SubText
                     end
                 end
+                
+                -- Refresh all elements in tab
+                if tab.Elements then
+                    for _, element in ipairs(tab.Elements) do
+                        -- Refresh based on element type
+                        if element.Container then
+                            -- Most elements have Container with Secondary color
+                            if element.Container:FindFirstChild("ButtonElement") then
+                                -- Button
+                                local btn = element.Container:FindFirstChild("ButtonElement")
+                                if btn then
+                                    btn.BackgroundColor3 = Theme.Current.Tertiary
+                                    btn.TextColor3 = Theme.Current.Text
+                                end
+                            else
+                                element.Container.BackgroundColor3 = Theme.Current.Secondary
+                            end
+                        end
+                        
+                        -- Refresh labels
+                        if element.Label then
+                            element.Label.TextColor3 = Theme.Current.Text
+                        end
+                        
+                        -- Toggle specific
+                        if element.ToggleContainer then
+                            element.ToggleContainer.BackgroundColor3 = element.Value and Theme.Current.Accent or Theme.Current.Tertiary
+                        end
+                        
+                        -- Slider specific
+                        if element.SliderTrack then
+                            element.SliderTrack.BackgroundColor3 = Theme.Current.Tertiary
+                        end
+                        if element.SliderFill then
+                            element.SliderFill.BackgroundColor3 = Theme.Current.Accent
+                        end
+                        if element.ValueLabel then
+                            element.ValueLabel.TextColor3 = Theme.Current.Accent
+                        end
+                        
+                        -- Dropdown specific
+                        if element.Selected then
+                            element.Selected.BackgroundColor3 = Theme.Current.Tertiary
+                            element.Selected.TextColor3 = Theme.Current.Text
+                        end
+                        if element.DropdownContainer then
+                            element.DropdownContainer.BackgroundColor3 = Theme.Current.Tertiary
+                        end
+                        
+                        -- Keybind specific
+                        if element.Button and element.Button.Name == "KeyButton" then
+                            element.Button.BackgroundColor3 = Theme.Current.Tertiary
+                            element.Button.TextColor3 = Theme.Current.Text
+                        end
+                        
+                        -- ColorPicker specific
+                        if element.ColorPreview then
+                            -- ColorPreview uses actual color, not theme
+                        end
+                        
+                        -- Divider/Section specific
+                        if element.Title then
+                            element.Title.TextColor3 = Theme.Current.Text
+                        end
+                        if element.Arrow then
+                            element.Arrow.TextColor3 = Theme.Current.SubText
+                        end
+                        if element.LeftLine then
+                            element.LeftLine.BackgroundColor3 = Theme.Current.Divider
+                        end
+                        if element.RightLine then
+                            element.RightLine.BackgroundColor3 = Theme.Current.Divider
+                        end
+                        if element.Text then
+                            element.Text.TextColor3 = Theme.Current.SubText
+                        end
+                    end
+                end
             end
             
             -- Trigger auto save
@@ -594,17 +672,57 @@ function AntigravityUI:CreateWindow(options)
         
         if #Window.Tabs == 1 then Tab:Select() end
         
-        -- Add component methods
-        function Tab:AddButton(opts) return Components.Button.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddToggle(opts) return Components.Toggle.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddTextbox(opts) return Components.Textbox.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddDropdown(opts) return Components.Dropdown.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddSlider(opts) return Components.Slider.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddColorPicker(opts) return Components.ColorPicker.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddKeybind(opts) return Components.Keybind.new(Tab, opts, Theme, Animation, Window.ConfigHandler) end
-        function Tab:AddLabel(opts) return Components.Label.new(Tab, opts, Theme, Animation) end
-        function Tab:AddSection(opts) return Components.Section.new(Tab, opts, Theme, Animation, Window.ConfigHandler, Components) end
-        function Tab:AddDivider(opts) return Components.Divider.new(Tab, opts, Theme, Animation) end
+        -- Add component methods (store in Tab.Elements for theme refresh)
+        function Tab:AddButton(opts)
+            local component = Components.Button.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddToggle(opts)
+            local component = Components.Toggle.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddTextbox(opts)
+            local component = Components.Textbox.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddDropdown(opts)
+            local component = Components.Dropdown.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddSlider(opts)
+            local component = Components.Slider.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddColorPicker(opts)
+            local component = Components.ColorPicker.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddKeybind(opts)
+            local component = Components.Keybind.new(Tab, opts, Theme, Animation, Window.ConfigHandler)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddLabel(opts)
+            local component = Components.Label.new(Tab, opts, Theme, Animation)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddSection(opts)
+            local component = Components.Section.new(Tab, opts, Theme, Animation, Window.ConfigHandler, Components)
+            table.insert(Tab.Elements, component)
+            return component
+        end
+        function Tab:AddDivider(opts)
+            local component = Components.Divider.new(Tab, opts, Theme, Animation)
+            table.insert(Tab.Elements, component)
+            return component
+        end
         
         return Tab
     end
