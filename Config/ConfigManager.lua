@@ -98,7 +98,7 @@ function ConfigManager:Save(configName, data)
     
     if success then
         self.Configs[configName] = data
-        print("[AntigravityUI] Config saved:", path)
+        --print("[AntigravityUI] Config saved:", path)
         return true
     else
         warn("[AntigravityUI] Failed to save config:", err)

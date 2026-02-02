@@ -1,318 +1,419 @@
 --[[
-    ╔═══════════════════════════════════════════════════════════════╗
-    ║           ANTIGRAVITY UI LIBRARY - EXAMPLE USAGE              ║
-    ╚═══════════════════════════════════════════════════════════════╝
+    Antigravity UI Library - Full Example
+    ตัวอย่างการใช้งานครบทุก Component
     
-    วิธีใช้งาน Antigravity UI Library
-    รันสคริปต์นี้เพื่อดูตัวอย่างการทำงานของทุก Components
+    โครงสร้าง Config:
+    AntigravityUI/
+    └── {Username}/
+        └── {GameName}/
+            └── Config.json
 ]]
 
--- ================================================================
--- LOAD LIBRARY
--- ================================================================
--- วิธีที่ 1: Load จาก GitHub (สำหรับ Executor)
-local AntigravityUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Main.lua"))()
-
--- วิธีที่ 2: Require จาก ModuleScript (สำหรับ Roblox Studio)
--- local AntigravityUI = require(script.Parent.Main)
+-- โหลด Library
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/Loader.lua"))()
 
 -- ================================================================
--- CREATE WINDOW
+-- สร้าง Window
 -- ================================================================
-local Window = AntigravityUI:CreateWindow({
-    Title = "🌌 Antigravity Hub",
-    Size = UDim2.new(0, 550, 0, 450),
-    Theme = "Dark", -- Dark, Light, PastelBlue, PastelGreen
-    ConfigName = "ExampleConfig",
-    AutoSave = true,
-    AutoLoad = true,
-    FloatingIcon = {
+local Window = UI:CreateWindow({
+    Title = "BloxFruit Hub",           -- ชื่อแสดงบน Title Bar
+    GameName = "BloxFruit",            -- ชื่อ Folder สำหรับ Save Config
+    ConfigName = "Config",             -- ชื่อไฟล์ Config (ไม่ต้องใส่ .json)
+    Theme = "Dark",                    -- Theme: Dark, Light, PastelBlue, PastelGreen
+    Size = UDim2.new(0, 550, 0, 450),  -- ขนาดหน้าต่าง
+    AutoSave = true,                   -- Auto Save เมื่อค่าเปลี่ยน
+    AutoLoad = true,                   -- Auto Load ตอนเปิด
+    FloatingIcon = {                   -- ไอคอนลอย (เมื่อ Minimize)
         Enabled = true,
         Position = UDim2.new(0, 20, 0.5, 0)
     }
 })
 
 -- ================================================================
--- TAB: MAIN
+-- Tab: Main Functions
 -- ================================================================
-local MainTab = Window:CreateTab({
-    Name = "🏠 Main",
-    Icon = ""
+local MainTab = Window:CreateTab({ Name = "🎮 Main" })
+
+-- Section: การเพาะเลี้ยง
+local FarmSection = MainTab:AddSection({
+    Name = "🌾 Auto Farm",
+    Collapsed = false  -- เริ่มต้นเปิด
 })
 
--- Label
-MainTab:AddLabel({
-    Name = "Info",
-    Text = "Welcome to Antigravity UI Library v1.0!"
+-- Toggle: เปิด/ปิด Auto Farm
+MainTab:AddToggle({
+    Name = "Enable Auto Farm",
+    Default = false,
+    Flag = "AutoFarm",  -- ← Flag สำหรับ Save Config
+    Callback = function(value)
+        print("Auto Farm:", value)
+        -- ใส่โค้ดของคุณที่นี่
+    end
 })
 
--- Button
-MainTab:AddButton({
-    Name = "🎉 Click Me!",
+-- Toggle: Auto Quest
+MainTab:AddToggle({
+    Name = "Auto Quest",
+    Default = false,
+    Flag = "AutoQuest",
+    Callback = function(value)
+        print("Auto Quest:", value)
+    end
+})
+
+-- Dropdown: เลือก Zone
+MainTab:AddDropdown({
+    Name = "Select Zone",
+    Options = {"Zone 1", "Zone 2", "Zone 3", "Boss Area", "Secret Zone"},
+    Default = "Zone 1",
+    Flag = "SelectedZone",
+    Searchable = true,  -- มีช่องค้นหา
+    Callback = function(selected)
+        print("Selected Zone:", selected)
+    end
+})
+
+-- Dropdown: Multi Select (เลือกหลายอัน)
+MainTab:AddDropdown({
+    Name = "Select Fruits",
+    Options = {"Buddha", "Leopard", "Dragon", "Venom", "Dough"},
+    Default = {"Buddha", "Dragon"},  -- เลือกหลายค่าตั้งต้น
+    Multi = true,  -- เปิดใช้ Multi Select
+    Flag = "SelectedFruits",
+    Callback = function(selected)
+        print("Selected Fruits:", table.concat(selected, ", "))
+    end
+})
+
+-- Slider: ความเร็ว
+MainTab:AddSlider({
+    Name = "Farm Speed",
+    Min = 1,
+    Max = 100,
+    Default = 50,
+    Increment = 5,  -- เพิ่มทีละ 5
+    Suffix = " WPS",  -- หน่วย
+    Flag = "FarmSpeed",
+    Callback = function(value)
+        print("Farm Speed:", value)
+    end
+})
+
+-- Slider: ระยะห่าง
+MainTab:AddSlider({
+    Name = "Attack Range",
+    Min = 10,
+    Max = 500,
+    Default = 100,
+    Increment = 10,
+    Suffix = " Studs",
+    Flag = "AttackRange",
+    Callback = function(value)
+        print("Attack Range:", value)
+    end
+})
+
+-- ================================================================
+-- Tab: Player Settings
+-- ================================================================
+local PlayerTab = Window:CreateTab({ Name = "👤 Player" })
+
+-- Label: แสดงข้อความ
+PlayerTab:AddLabel({
+    Name = "Player Settings",
+    Text = "⚙️ ตั้งค่าผู้เล่น"
+})
+
+-- Toggle: Speed Hack
+PlayerTab:AddToggle({
+    Name = "Speed Hack",
+    Default = false,
+    Flag = "SpeedHack",
+    Callback = function(value)
+        if value then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+        else
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+})
+
+-- Toggle: Infinite Jump
+PlayerTab:AddToggle({
+    Name = "Infinite Jump",
+    Default = false,
+    Flag = "InfJump",
+    Callback = function(value)
+        print("Infinite Jump:", value)
+    end
+})
+
+-- Slider: WalkSpeed
+PlayerTab:AddSlider({
+    Name = "Walk Speed",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Increment = 1,
+    Flag = "WalkSpeed",
+    Callback = function(value)
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = value
+        end
+    end
+})
+
+-- Slider: Jump Power
+PlayerTab:AddSlider({
+    Name = "Jump Power",
+    Min = 50,
+    Max = 500,
+    Default = 50,
+    Increment = 10,
+    Flag = "JumpPower",
+    Callback = function(value)
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = value
+        end
+    end
+})
+
+-- ================================================================
+-- Tab: Teleport
+-- ================================================================
+local TeleportTab = Window:CreateTab({ Name = "🚀 Teleport" })
+
+-- Button: Teleport ไปตำแหน่งต่างๆ
+TeleportTab:AddButton({
+    Name = "Teleport to Spawn",
     Callback = function()
-        AntigravityUI:Notify({
-            Title = "Button Clicked!",
-            Message = "You pressed the button successfully.",
+        print("Teleporting to Spawn...")
+        UI:Notify({
+            Title = "Teleport",
+            Message = "Teleported to Spawn!",
             Type = "Success",
             Duration = 3
         })
     end
 })
 
--- Toggle
-MainTab:AddToggle({
-    Name = "Enable Feature",
-    Default = false,
-    Flag = "FeatureToggle", -- สำหรับ Auto Save
-    Callback = function(value)
-        print("Feature:", value and "Enabled" or "Disabled")
+TeleportTab:AddButton({
+    Name = "Teleport to Boss",
+    Callback = function()
+        print("Teleporting to Boss...")
+        UI:Notify({
+            Title = "Teleport",
+            Message = "Teleported to Boss!",
+            Type = "Info",
+            Duration = 3
+        })
     end
 })
 
--- Slider
-MainTab:AddSlider({
-    Name = "Walk Speed",
-    Min = 16,
-    Max = 200,
-    Default = 16,
-    Increment = 1,
-    Suffix = " studs/s",
-    Flag = "WalkSpeed",
-    Callback = function(value)
-        local player = game.Players.LocalPlayer
-        if player and player.Character then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid.WalkSpeed = value
-            end
-        end
+TeleportTab:AddButton({
+    Name = "Teleport to Shop",
+    Callback = function()
+        print("Teleporting to Shop...")
     end
 })
 
--- ================================================================
--- TAB: PLAYER
--- ================================================================
-local PlayerTab = Window:CreateTab({
-    Name = "👤 Player",
-    Icon = ""
-})
-
--- Textbox
-PlayerTab:AddTextbox({
+-- Textbox: พิมพ์ชื่อผู้เล่นเพื่อ Teleport
+TeleportTab:AddTextbox({
     Name = "Player Name",
-    Placeholder = "Enter player name...",
     Default = "",
-    Flag = "TargetPlayer",
+    Placeholder = "Enter player name...",
+    Flag = "TeleportPlayer",
     Callback = function(text, enterPressed)
         if enterPressed then
-            print("Searching for:", text)
+            print("Teleporting to player:", text)
         end
     end
 })
 
--- Dropdown (Single Select)
-local players = {}
-for _, player in ipairs(game.Players:GetPlayers()) do
-    table.insert(players, player.Name)
-end
-
-local PlayerDropdown = PlayerTab:AddDropdown({
-    Name = "Select Player",
-    Options = players,
-    Searchable = true, -- พิมพ์ค้นหาได้!
-    Multi = false,
-    Flag = "SelectedPlayer",
-    Callback = function(selected)
-        print("Selected player:", selected)
-    end
-})
-
--- Update player list when players join/leave
-game.Players.PlayerAdded:Connect(function(player)
-    local newList = {}
-    for _, p in ipairs(game.Players:GetPlayers()) do
-        table.insert(newList, p.Name)
-    end
-    PlayerDropdown:Refresh(newList)
-end)
-
-game.Players.PlayerRemoving:Connect(function()
-    local newList = {}
-    for _, p in ipairs(game.Players:GetPlayers()) do
-        table.insert(newList, p.Name)
-    end
-    PlayerDropdown:Refresh(newList)
-end)
-
--- Dropdown (Multi Select)
-PlayerTab:AddDropdown({
-    Name = "Select Teams",
-    Options = {"Red", "Blue", "Green", "Yellow", "Neutral"},
-    Searchable = true,
-    Multi = true, -- เลือกหลายตัวได้
-    Default = {"Neutral"},
-    Flag = "SelectedTeams",
-    Callback = function(selected)
-        print("Selected teams:", table.concat(selected, ", "))
-    end
-})
-
 -- ================================================================
--- TAB: VISUALS
+-- Tab: Visuals
 -- ================================================================
-local VisualsTab = Window:CreateTab({
-    Name = "👁️ Visuals",
-    Icon = ""
-})
+local VisualsTab = Window:CreateTab({ Name = "👁️ Visuals" })
 
--- Toggle with Keybind
+-- Toggle: ESP
 VisualsTab:AddToggle({
-    Name = "ESP Enabled",
+    Name = "Player ESP",
     Default = false,
-    Flag = "ESPEnabled",
+    Flag = "PlayerESP",
     Callback = function(value)
-        print("ESP:", value and "ON" or "OFF")
+        print("Player ESP:", value)
     end
 })
 
--- Color Picker
+-- ColorPicker: ESP Color
 VisualsTab:AddColorPicker({
     Name = "ESP Color",
     Default = Color3.fromRGB(255, 0, 0),
     Flag = "ESPColor",
     Callback = function(color)
-        print("ESP Color:", color)
+        print("ESP Color:", color.R, color.G, color.B)
     end
 })
 
--- Another Color Picker
-VisualsTab:AddColorPicker({
-    Name = "Chams Color",
-    Default = Color3.fromRGB(0, 255, 0),
-    Flag = "ChamsColor",
-    Callback = function(color)
-        print("Chams Color:", color)
-    end
-})
-
--- Slider for Transparency
-VisualsTab:AddSlider({
-    Name = "ESP Transparency",
-    Min = 0,
-    Max = 1,
-    Default = 0.5,
-    Increment = 0.1,
-    Flag = "ESPTransparency",
+-- Toggle: Fullbright
+VisualsTab:AddToggle({
+    Name = "Fullbright",
+    Default = false,
+    Flag = "Fullbright",
     Callback = function(value)
-        print("ESP Transparency:", value)
+        local lighting = game:GetService("Lighting")
+        if value then
+            lighting.Brightness = 2
+            lighting.ClockTime = 14
+            lighting.FogEnd = 100000
+        else
+            lighting.Brightness = 1
+            lighting.ClockTime = 14
+            lighting.FogEnd = 1000
+        end
+    end
+})
+
+-- Slider: Field of View
+VisualsTab:AddSlider({
+    Name = "Field of View",
+    Min = 70,
+    Max = 120,
+    Default = 70,
+    Increment = 1,
+    Flag = "FOV",
+    Callback = function(value)
+        workspace.CurrentCamera.FieldOfView = value
     end
 })
 
 -- ================================================================
--- TAB: SETTINGS
+-- Tab: Keybinds
 -- ================================================================
-local SettingsTab = Window:CreateTab({
-    Name = "⚙️ Settings",
-    Icon = ""
-})
+local KeybindsTab = Window:CreateTab({ Name = "⌨️ Keybinds" })
 
--- Keybind
-SettingsTab:AddKeybind({
+-- Keybind: Toggle UI
+KeybindsTab:AddKeybind({
     Name = "Toggle UI",
-    Default = Enum.KeyCode.RightControl,
+    Default = Enum.KeyCode.RightShift,
     Flag = "ToggleUIKey",
     Callback = function()
         Window:Toggle()
     end,
     ChangedCallback = function(newKey)
-        print("Toggle key changed to:", newKey.Name)
+        print("Toggle UI key changed to:", newKey.Name)
     end
 })
 
--- Theme Dropdown
+-- Keybind: Quick Farm
+KeybindsTab:AddKeybind({
+    Name = "Quick Farm",
+    Default = Enum.KeyCode.F,
+    Flag = "QuickFarmKey",
+    Callback = function()
+        print("Quick Farm activated!")
+        UI:Notify({
+            Title = "Keybind",
+            Message = "Quick Farm activated!",
+            Type = "Info",
+            Duration = 2
+        })
+    end
+})
+
+-- Keybind: Emergency Stop
+KeybindsTab:AddKeybind({
+    Name = "Emergency Stop",
+    Default = Enum.KeyCode.X,
+    Flag = "EmergencyStopKey",
+    Callback = function()
+        print("Emergency Stop!")
+        UI:Notify({
+            Title = "⚠️ Emergency",
+            Message = "All functions stopped!",
+            Type = "Warning",
+            Duration = 3
+        })
+    end
+})
+
+-- ================================================================
+-- Tab: Settings
+-- ================================================================
+local SettingsTab = Window:CreateTab({ Name = "⚙️ Settings" })
+
+-- Dropdown: Theme
 SettingsTab:AddDropdown({
-    Name = "Theme",
+    Name = "UI Theme",
     Options = {"Dark", "Light", "PastelBlue", "PastelGreen"},
     Default = "Dark",
     Callback = function(selected)
         Window:SetTheme(selected)
-        AntigravityUI:Notify({
+        UI:Notify({
             Title = "Theme Changed",
-            Message = "Theme set to: " .. selected,
-            Type = "Info"
+            Message = "Theme set to " .. selected,
+            Type = "Success"
         })
     end
 })
 
--- Save/Load buttons
+-- Button: Save Config
 SettingsTab:AddButton({
     Name = "💾 Save Config",
     Callback = function()
-        if Window:SaveConfig() then
-            AntigravityUI:Notify({
-                Title = "Config Saved",
-                Message = "Your settings have been saved!",
-                Type = "Success"
-            })
-        else
-            AntigravityUI:Notify({
-                Title = "Save Failed",
-                Message = "Could not save config",
-                Type = "Error"
-            })
-        end
+        Window:SaveConfig()
+        UI:Notify({
+            Title = "Config",
+            Message = "Config saved successfully!",
+            Type = "Success"
+        })
     end
 })
 
+-- Button: Load Config
 SettingsTab:AddButton({
     Name = "📂 Load Config",
     Callback = function()
-        if Window:LoadConfig() then
-            AntigravityUI:Notify({
-                Title = "Config Loaded",
-                Message = "Your settings have been loaded!",
-                Type = "Success"
-            })
-        else
-            AntigravityUI:Notify({
-                Title = "No Config",
-                Message = "No saved config found",
-                Type = "Warning"
-            })
-        end
+        Window:LoadConfig()
+        UI:Notify({
+            Title = "Config",
+            Message = "Config loaded successfully!",
+            Type = "Success"
+        })
     end
 })
 
+-- Button: Delete Config
 SettingsTab:AddButton({
     Name = "🗑️ Delete Config",
     Callback = function()
         Window:DeleteConfig()
-        AntigravityUI:Notify({
-            Title = "Config Deleted",
-            Message = "Your saved settings have been deleted",
-            Type = "Info"
+        UI:Notify({
+            Title = "Config",
+            Message = "Config deleted!",
+            Type = "Warning"
         })
     end
 })
 
--- Destroy button
-SettingsTab:AddButton({
-    Name = "❌ Close UI",
-    Callback = function()
-        Window:Destroy()
-    end
-})
+-- ================================================================
+-- Notifications Examples
+-- ================================================================
 
--- ================================================================
--- INITIAL NOTIFICATION
--- ================================================================
-AntigravityUI:Notify({
-    Title = "🌌 Antigravity UI",
-    Message = "Library loaded successfully! Press RightCtrl to toggle.",
-    Type = "Info",
+-- แสดง Notification ตอนโหลดเสร็จ
+UI:Notify({
+    Title = "✅ Loaded!",
+    Message = "BloxFruit Hub loaded successfully!",
+    Type = "Success",
     Duration = 5
 })
 
-print("✅ Antigravity UI Library Example Loaded!")
-print("📌 Press RightControl to toggle the UI")
-print("📌 Use the floating icon when minimized")
+-- ================================================================
+-- สรุป Config Path
+-- ================================================================
+print("============================================")
+print("Antigravity UI - Full Example Loaded!")
+print("Config Path: AntigravityUI/" .. game.Players.LocalPlayer.Name .. "/BloxFruit/Config.json")
+print("============================================")
