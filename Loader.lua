@@ -159,12 +159,12 @@ function AntigravityUI:CreateWindow(options)
     titleCorner.CornerRadius = UDim.new(0, 10)
     titleCorner.Parent = Window.TitleBar
     
-    local titleFix = Instance.new("Frame")
-    titleFix.Size = UDim2.new(1, 0, 0, 15)
-    titleFix.Position = UDim2.new(0, 0, 1, -15)
-    titleFix.BackgroundColor3 = Theme.Current.Secondary
-    titleFix.BorderSizePixel = 0
-    titleFix.Parent = Window.TitleBar
+    Window.TitleFix = Instance.new("Frame")
+    Window.TitleFix.Size = UDim2.new(1, 0, 0, 15)
+    Window.TitleFix.Position = UDim2.new(0, 0, 1, -15)
+    Window.TitleFix.BackgroundColor3 = Theme.Current.Secondary
+    Window.TitleFix.BorderSizePixel = 0
+    Window.TitleFix.Parent = Window.TitleBar
     
     Window.TitleLabel = Instance.new("TextLabel")
     Window.TitleLabel.Size = UDim2.new(1, -100, 1, 0)
@@ -191,34 +191,41 @@ function AntigravityUI:CreateWindow(options)
     controlsLayout.Padding = UDim.new(0, 5)
     controlsLayout.Parent = controlsContainer
     
-    local minimizeBtn = Instance.new("TextButton")
-    minimizeBtn.Size = UDim2.new(0, 30, 0, 30)
-    minimizeBtn.BackgroundColor3 = Theme.Current.Tertiary
-    minimizeBtn.BorderSizePixel = 0
-    minimizeBtn.Text = "−"
-    minimizeBtn.TextColor3 = Theme.Current.Text
-    minimizeBtn.TextSize = 20
-    minimizeBtn.Font = Enum.Font.GothamBold
-    minimizeBtn.AutoButtonColor = false
-    minimizeBtn.Parent = controlsContainer
+    Window.MinimizeBtn = Instance.new("TextButton")
+    Window.MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+    Window.MinimizeBtn.BackgroundColor3 = Theme.Current.Tertiary
+    Window.MinimizeBtn.BorderSizePixel = 0
+    Window.MinimizeBtn.Text = "−"
+    Window.MinimizeBtn.TextColor3 = Theme.Current.Text
+    Window.MinimizeBtn.TextSize = 20
+    Window.MinimizeBtn.Font = Enum.Font.GothamBold
+    Window.MinimizeBtn.AutoButtonColor = false
+    Window.MinimizeBtn.Parent = controlsContainer
     
-    Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", Window.MinimizeBtn).CornerRadius = UDim.new(0, 6)
     
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 30, 0, 30)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "×"
-    closeBtn.TextColor3 = Theme.Current.Text
-    closeBtn.TextSize = 20
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.AutoButtonColor = false
-    closeBtn.Parent = controlsContainer
+    Window.CloseBtn = Instance.new("TextButton")
+    Window.CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+    Window.CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+    Window.CloseBtn.BorderSizePixel = 0
+    Window.CloseBtn.Text = "×"
+    Window.CloseBtn.TextColor3 = Theme.Current.Text
+    Window.CloseBtn.TextSize = 20
+    Window.CloseBtn.Font = Enum.Font.GothamBold
+    Window.CloseBtn.AutoButtonColor = false
+    Window.CloseBtn.Parent = controlsContainer
     
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", Window.CloseBtn).CornerRadius = UDim.new(0, 6)
     
-    Animation:CreateHoverEffect(minimizeBtn, Theme.Current.Accent, Theme.Current.Tertiary)
-    Animation:CreateHoverEffect(closeBtn, Color3.fromRGB(220, 100, 100), Color3.fromRGB(200, 80, 80))
+    -- Dynamic hover effects for minimize button
+    Window.MinimizeBtn.MouseEnter:Connect(function()
+        Animation:Play(Window.MinimizeBtn, {BackgroundColor3 = Theme.Current.Accent}, 0.15)
+    end)
+    Window.MinimizeBtn.MouseLeave:Connect(function()
+        Animation:Play(Window.MinimizeBtn, {BackgroundColor3 = Theme.Current.Tertiary}, 0.15)
+    end)
+    -- Close button hover (always red tones)
+    Animation:CreateHoverEffect(Window.CloseBtn, Color3.fromRGB(220, 100, 100), Color3.fromRGB(200, 80, 80))
     
     -- Tab sidebar
     Window.TabContainer = Instance.new("Frame")
@@ -490,6 +497,19 @@ function AntigravityUI:CreateWindow(options)
             end
             if Window.TabContainer then
                 Window.TabContainer.BackgroundColor3 = Theme.Current.Secondary
+            end
+            -- TitleBar corner fix element
+            if Window.TitleFix then
+                Window.TitleFix.BackgroundColor3 = Theme.Current.Secondary
+            end
+            -- Minimize button
+            if Window.MinimizeBtn then
+                Window.MinimizeBtn.BackgroundColor3 = Theme.Current.Tertiary
+                Window.MinimizeBtn.TextColor3 = Theme.Current.Text
+            end
+            -- Close button text
+            if Window.CloseBtn then
+                Window.CloseBtn.TextColor3 = Theme.Current.Text
             end
             
             -- Refresh tab buttons
@@ -824,8 +844,8 @@ function AntigravityUI:CreateWindow(options)
         return Tab
     end
     
-    minimizeBtn.MouseButton1Click:Connect(function() Window:Minimize() end)
-    closeBtn.MouseButton1Click:Connect(function() Window:Destroy() end)
+    Window.MinimizeBtn.MouseButton1Click:Connect(function() Window:Minimize() end)
+    Window.CloseBtn.MouseButton1Click:Connect(function() Window:Destroy() end)
     
     table.insert(AntigravityUI.Windows, Window)
     
