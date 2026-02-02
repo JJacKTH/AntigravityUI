@@ -549,8 +549,31 @@ function AntigravityUI:CreateWindow(options)
                         if element.SelectedLabel then
                             element.SelectedLabel.TextColor3 = Theme.Current.Text
                         end
-                        if element.DropdownList then
-                            element.DropdownList.BackgroundColor3 = Theme.Current.Tertiary
+                        -- Dropdown list container
+                        if element.ListContainer then
+                            element.ListContainer.BackgroundColor3 = Theme.Current.Tertiary
+                        end
+                        -- Dropdown search box
+                        if element.SearchBox then
+                            element.SearchBox.BackgroundColor3 = Theme.Current.Secondary
+                            element.SearchBox.TextColor3 = Theme.Current.Text
+                            element.SearchBox.PlaceholderColor3 = Theme.Current.SubText
+                        end
+                        -- Dropdown option labels
+                        if element.OptionsList then
+                            for _, optBtn in ipairs(element.OptionsList:GetChildren()) do
+                                if optBtn:IsA("TextButton") then
+                                    optBtn.BackgroundColor3 = Theme.Current.Accent
+                                    local label = optBtn:FindFirstChild("Label")
+                                    if label then
+                                        label.TextColor3 = Theme.Current.Text
+                                    end
+                                    local checkmark = optBtn:FindFirstChild("Checkmark")
+                                    if checkmark then
+                                        checkmark.TextColor3 = Theme.Current.Text
+                                    end
+                                end
+                            end
                         end
                         
                         -- Keybind specific
@@ -620,6 +643,22 @@ function AntigravityUI:CreateWindow(options)
                                 end
                                 if nestedElement.SelectedLabel then
                                     nestedElement.SelectedLabel.TextColor3 = Theme.Current.Text
+                                end
+                                if nestedElement.ListContainer then
+                                    nestedElement.ListContainer.BackgroundColor3 = Theme.Current.Tertiary
+                                end
+                                if nestedElement.SearchBox then
+                                    nestedElement.SearchBox.BackgroundColor3 = Theme.Current.Secondary
+                                    nestedElement.SearchBox.TextColor3 = Theme.Current.Text
+                                end
+                                if nestedElement.OptionsList then
+                                    for _, optBtn in ipairs(nestedElement.OptionsList:GetChildren()) do
+                                        if optBtn:IsA("TextButton") then
+                                            optBtn.BackgroundColor3 = Theme.Current.Accent
+                                            local label = optBtn:FindFirstChild("Label")
+                                            if label then label.TextColor3 = Theme.Current.Text end
+                                        end
+                                    end
                                 end
                                 -- Keybind
                                 if nestedElement.Button and nestedElement.Button.Name == "KeyButton" then
