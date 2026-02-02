@@ -107,11 +107,19 @@ function AntigravityUI:CreateWindow(options)
         function() return Window.Theme end,
         function(value)
             if value and Theme.Presets[value] then
-                Window.Theme = value
-                Theme.Current = Theme.Presets[value]
+                -- Use SetTheme to properly refresh UI after load
+                task.defer(function()
+                    if Window.SetTheme then
+                        Window:SetTheme(value)
+                    else
+                        Window.Theme = value
+                        Theme.Current = Theme.Presets[value]
+                    end
+                end)
             end
         end
     )
+    
     local parent = self:GetParent()
     if not parent then
         warn("[AntigravityUI] Failed to get parent")

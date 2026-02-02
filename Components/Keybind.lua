@@ -125,10 +125,22 @@ function Keybind.new(tab, options, Theme, Animation, ConfigHandler)
         end
     end)
     
-    -- Hover effect
-    if Animation then
-        Animation:CreateHoverEffect(self.Button, Theme.Current.Accent, Theme.Current.Tertiary)
-    end
+    -- Hover effect with dynamic Theme colors
+    self.Button.MouseEnter:Connect(function()
+        if Animation then
+            Animation:Play(self.Button, {BackgroundColor3 = Theme.Current.Accent}, 0.15)
+        else
+            self.Button.BackgroundColor3 = Theme.Current.Accent
+        end
+    end)
+    
+    self.Button.MouseLeave:Connect(function()
+        if Animation then
+            Animation:Play(self.Button, {BackgroundColor3 = Theme.Current.Tertiary}, 0.15)
+        else
+            self.Button.BackgroundColor3 = Theme.Current.Tertiary
+        end
+    end)
     
     -- Additional Methods
     function self:Set(keyCode)

@@ -12,6 +12,7 @@ function Button.new(tab, options, Theme, Animation, ConfigHandler)
     self.Name = options.Name or "Button"
     self.Callback = options.Callback or function() end
     self.Tab = tab
+    self.Theme = Theme  -- Store Theme reference for dynamic color
     
     -- Get current element count for ordering
     local elementCount = #tab.Page:GetChildren()
@@ -43,18 +44,22 @@ function Button.new(tab, options, Theme, Animation, ConfigHandler)
     corner.CornerRadius = UDim.new(0, 6)
     corner.Parent = self.Element
     
-    -- Hover effect
-    if Animation then
-        Animation:CreateHoverEffect(self.Element, Theme.Current.Accent, Theme.Current.Tertiary)
-        Animation:CreateRipple(self.Element)
-    else
-        self.Element.MouseEnter:Connect(function()
+    -- Hover effect with dynamic Theme colors
+    self.Element.MouseEnter:Connect(function()
+        if Animation then
+            Animation:Play(self.Element, {BackgroundColor3 = Theme.Current.Accent}, 0.15)
+        else
             self.Element.BackgroundColor3 = Theme.Current.Accent
-        end)
-        self.Element.MouseLeave:Connect(function()
+        end
+    end)
+    
+    self.Element.MouseLeave:Connect(function()
+        if Animation then
+            Animation:Play(self.Element, {BackgroundColor3 = Theme.Current.Tertiary}, 0.15)
+        else
             self.Element.BackgroundColor3 = Theme.Current.Tertiary
-        end)
-    end
+        end
+    end)
     
     -- Click event
     self.Element.MouseButton1Click:Connect(function()
