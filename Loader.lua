@@ -102,6 +102,16 @@ function AntigravityUI:CreateWindow(options)
     -- CreateHandler(gameName, configName, autoSave, autoLoad)
     Window.ConfigHandler = ConfigManager:CreateHandler(Window.GameName, Window.ConfigName, Window.AutoSave, Window.AutoLoad)
     
+    -- Register Theme for save/load
+    Window.ConfigHandler:Register("__Theme__", "Theme", 
+        function() return Window.Theme end,
+        function(value)
+            if value and Theme.Presets[value] then
+                Window.Theme = value
+                Theme.Current = Theme.Presets[value]
+            end
+        end
+    )
     local parent = self:GetParent()
     if not parent then
         warn("[AntigravityUI] Failed to get parent")
@@ -458,7 +468,42 @@ function AntigravityUI:CreateWindow(options)
     function Window:SetTheme(themeName)
         if Theme.Presets and Theme.Presets[themeName] then
             Theme.Current = Theme.Presets[themeName]
+            Window.Theme = themeName
+            
+            -- Refresh main container colors
+            if Window.Container then
+                Window.Container.BackgroundColor3 = Theme.Current.Background
+            end
+            if Window.TitleBar then
+                Window.TitleBar.BackgroundColor3 = Theme.Current.Secondary
+            end
+            if Window.TitleLabel then
+                Window.TitleLabel.TextColor3 = Theme.Current.Text
+            end
+            if Window.TabContainer then
+                Window.TabContainer.BackgroundColor3 = Theme.Current.Secondary
+            end
+            
+            -- Refresh tab buttons
+            for _, tab in ipairs(Window.Tabs) do
+                if tab.Button then
+                    if Window.ActiveTab == tab then
+                        tab.Button.BackgroundColor3 = Theme.Current.Accent
+                        tab.Button.TextColor3 = Theme.Current.Text
+                    else
+                        tab.Button.TextColor3 = Theme.Current.SubText
+                    end
+                end
+            end
+            
+            -- Trigger auto save
+            if Window.ConfigHandler and Window.ConfigHandler.AutoSave then
+                Window.ConfigHandler:TriggerAutoSave()
+            end
+            
+            return true
         end
+        return false
     end
     
     function Window:SaveConfig() return Window.ConfigHandler:Save() end
