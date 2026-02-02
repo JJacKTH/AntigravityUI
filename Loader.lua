@@ -979,4 +979,6 @@ function AntigravityUI:DestroyAll()
     self.Windows = {}
 end
 
+AntigravityUI.Load = AntigravityUI.CreateWindow
+
 return AntigravityUI

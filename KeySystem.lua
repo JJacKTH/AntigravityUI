@@ -16,7 +16,7 @@ local Config = {
 }
 
 -- Create Window (Smaller size for Login)
-local Window = Antigravity.Load({
+local Window = Antigravity:Load({
     Title = "Authentication",
     Size = UDim2.fromOffset(400, 280),
     Resizing = false, -- Fixed size for login
