@@ -20,6 +20,21 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
     self.Open = false
     self.Dragging = nil
     
+    -- Helper methods (defined early for use during UI creation)
+    function self:GetRGBText()
+        local r = math.floor(self.Value.R * 255 + 0.5)
+        local g = math.floor(self.Value.G * 255 + 0.5)
+        local b = math.floor(self.Value.B * 255 + 0.5)
+        return string.format("RGB: %d, %d, %d", r, g, b)
+    end
+    
+    function self:GetHexText()
+        local r = math.floor(self.Value.R * 255 + 0.5)
+        local g = math.floor(self.Value.G * 255 + 0.5)
+        local b = math.floor(self.Value.B * 255 + 0.5)
+        return string.format("#%02X%02X%02X", r, g, b)
+    end
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "ColorPicker_" .. self.Name
@@ -333,21 +348,7 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
         end
     end)
     
-    -- Methods
-    function self:GetRGBText()
-        local r = math.floor(self.Value.R * 255 + 0.5)
-        local g = math.floor(self.Value.G * 255 + 0.5)
-        local b = math.floor(self.Value.B * 255 + 0.5)
-        return string.format("RGB: %d, %d, %d", r, g, b)
-    end
-    
-    function self:GetHexText()
-        local r = math.floor(self.Value.R * 255 + 0.5)
-        local g = math.floor(self.Value.G * 255 + 0.5)
-        local b = math.floor(self.Value.B * 255 + 0.5)
-        return string.format("#%02X%02X%02X", r, g, b)
-    end
-    
+    -- Additional Methods
     function self:Set(color)
         self.Value = color
         self.Hue, self.Sat, self.Val = Color3.toHSV(color)
