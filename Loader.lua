@@ -81,7 +81,8 @@ function AntigravityUI:CreateWindow(options)
     Window.Title = options.Title or "Antigravity UI"
     Window.Size = options.Size or UDim2.new(0, 500, 0, 400)
     Window.Theme = options.Theme or "Dark"
-    Window.ConfigName = options.ConfigName or "Default"
+    Window.GameName = options.GameName or options.Title or "Default"  -- ชื่อ Game สำหรับ Config
+    Window.ConfigName = options.ConfigName or "Config"  -- ชื่อไฟล์ config
     Window.AutoSave = options.AutoSave or false
     Window.AutoLoad = options.AutoLoad or false
     Window.Tabs = {}
@@ -93,7 +94,8 @@ function AntigravityUI:CreateWindow(options)
         Theme.Current = Theme.Presets[Window.Theme]
     end
     
-    Window.ConfigHandler = ConfigManager:CreateHandler(Window.ConfigName, Window.AutoSave, Window.AutoLoad)
+    -- CreateHandler(gameName, configName, autoSave, autoLoad)
+    Window.ConfigHandler = ConfigManager:CreateHandler(Window.GameName, Window.ConfigName, Window.AutoSave, Window.AutoLoad)
     
     local parent = self:GetParent()
     if not parent then

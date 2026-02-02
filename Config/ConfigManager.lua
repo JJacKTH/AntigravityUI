@@ -1,6 +1,12 @@
 --[[
     Antigravity UI Library - Config Manager
-    Auto Save/Load system per UserId
+    Auto Save/Load system
+    
+    โครงสร้าง:
+    AntigravityUI/
+    └── {Username}/
+        └── {GameName}/
+            └── Config.json
 ]]
 
 local ConfigManager = {}
@@ -8,8 +14,9 @@ local ConfigManager = {}
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-ConfigManager.Folder = "AntigravityUI"
+ConfigManager.BaseFolder = "AntigravityUI"
 ConfigManager.Configs = {}
+ConfigManager.CurrentGame = "Default"
 
 -- Check if file system functions exist (executor support)
 local function hasFileSystem()
@@ -19,23 +26,59 @@ local function hasFileSystem()
            typeof(makefolder) == "function"
 end
 
--- Get UserId
+-- Get Username
+local function getUsername()
+    local player = Players.LocalPlayer
+    return player and player.Name or "Unknown"
+end
+
+-- Get UserId (for backup)
 local function getUserId()
     local player = Players.LocalPlayer
     return player and tostring(player.UserId) or "0"
 end
 
--- Get config file path
-function ConfigManager:GetPath(configName)
-    local userId = getUserId()
-    return string.format("%s/%s_%s.json", self.Folder, userId, configName)
+-- Set game name for config
+function ConfigManager:SetGame(gameName)
+    self.CurrentGame = gameName or "Default"
 end
 
--- Ensure folder exists
-function ConfigManager:EnsureFolder()
-    if hasFileSystem() and not isfolder(self.Folder) then
-        makefolder(self.Folder)
+-- Get folder path for current user and game
+function ConfigManager:GetFolderPath()
+    local username = getUsername()
+    return string.format("%s/%s/%s", self.BaseFolder, username, self.CurrentGame)
+end
+
+-- Get config file path
+function ConfigManager:GetPath(configName)
+    configName = configName or "Config"
+    return string.format("%s/%s.json", self:GetFolderPath(), configName)
+end
+
+-- Ensure all folders exist
+function ConfigManager:EnsureFolders()
+    if not hasFileSystem() then return false end
+    
+    local username = getUsername()
+    
+    -- Create base folder
+    if not isfolder(self.BaseFolder) then
+        makefolder(self.BaseFolder)
     end
+    
+    -- Create user folder
+    local userFolder = string.format("%s/%s", self.BaseFolder, username)
+    if not isfolder(userFolder) then
+        makefolder(userFolder)
+    end
+    
+    -- Create game folder
+    local gameFolder = self:GetFolderPath()
+    if not isfolder(gameFolder) then
+        makefolder(gameFolder)
+    end
+    
+    return true
 end
 
 -- Save config to file
@@ -45,7 +88,7 @@ function ConfigManager:Save(configName, data)
         return false
     end
     
-    self:EnsureFolder()
+    self:EnsureFolders()
     
     local path = self:GetPath(configName)
     local success, err = pcall(function()
@@ -55,6 +98,7 @@ function ConfigManager:Save(configName, data)
     
     if success then
         self.Configs[configName] = data
+        print("[AntigravityUI] Config saved:", path)
         return true
     else
         warn("[AntigravityUI] Failed to save config:", err)
@@ -82,6 +126,7 @@ function ConfigManager:Load(configName)
     
     if success then
         self.Configs[configName] = result
+        print("[AntigravityUI] Config loaded:", path)
         return result
     else
         warn("[AntigravityUI] Failed to load config:", result)
@@ -121,23 +166,23 @@ function ConfigManager:Exists(configName)
     return isfile(path)
 end
 
--- List all configs for current user
+-- List all configs in current game folder
 function ConfigManager:ListConfigs()
     if not hasFileSystem() then
         return {}
     end
     
-    self:EnsureFolder()
+    self:EnsureFolders()
     
     local configs = {}
-    local userId = getUserId()
+    local folderPath = self:GetFolderPath()
     
-    if typeof(listfiles) == "function" then
-        local files = listfiles(self.Folder)
+    if typeof(listfiles) == "function" and isfolder(folderPath) then
+        local files = listfiles(folderPath)
         for _, file in ipairs(files) do
             local fileName = file:match("([^/\\]+)$")
-            if fileName and fileName:match("^" .. userId .. "_") then
-                local configName = fileName:gsub("^" .. userId .. "_", ""):gsub("%.json$", "")
+            if fileName and fileName:match("%.json$") then
+                local configName = fileName:gsub("%.json$", "")
                 table.insert(configs, configName)
             end
         end
@@ -146,10 +191,39 @@ function ConfigManager:ListConfigs()
     return configs
 end
 
+-- List all games for current user
+function ConfigManager:ListGames()
+    if not hasFileSystem() then
+        return {}
+    end
+    
+    local games = {}
+    local username = getUsername()
+    local userFolder = string.format("%s/%s", self.BaseFolder, username)
+    
+    if typeof(listfiles) == "function" and isfolder(userFolder) then
+        local folders = listfiles(userFolder)
+        for _, folder in ipairs(folders) do
+            if isfolder(folder) then
+                local gameName = folder:match("([^/\\]+)$")
+                if gameName then
+                    table.insert(games, gameName)
+                end
+            end
+        end
+    end
+    
+    return games
+end
+
 -- Create a config handler for a window
-function ConfigManager:CreateHandler(configName, autoSave, autoLoad)
+function ConfigManager:CreateHandler(gameName, configName, autoSave, autoLoad)
+    -- Set current game
+    self:SetGame(gameName)
+    
     local handler = {
-        ConfigName = configName,
+        GameName = gameName,
+        ConfigName = configName or "Config",
         AutoSave = autoSave or false,
         AutoLoad = autoLoad or false,
         Data = {},
@@ -234,7 +308,7 @@ function ConfigManager:CreateHandler(configName, autoSave, autoLoad)
     end
     
     -- Auto load on creation if enabled
-    if autoLoad and ConfigManager:Exists(configName) then
+    if autoLoad and ConfigManager:Exists(configName or "Config") then
         task.defer(function()
             handler:Load()
         end)
