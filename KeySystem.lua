@@ -25,7 +25,7 @@ local Window = Antigravity:Load({
 })
 
 -- Create a single tab
-local KeyTab = Window:AddTab({
+local KeyTab = Window:CreateTab({
     Name = "Login",
     Icon = "rbxassetid://10723407389" -- Key icon
 })
