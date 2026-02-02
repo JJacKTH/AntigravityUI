@@ -31,10 +31,7 @@ local KeyTab = Window:CreateTab({
 })
 
 -- Add UI Elements
-local Section = KeyTab:AddSection({ Name = "Enter License Key" })
-
 local KeyInput = nil
-
 KeyInput = KeyTab:AddTextbox({
     Name = "License Key",
     Placeholder = "Paste your key here...",
@@ -70,9 +67,6 @@ KeyTab:AddButton({
         end
     end
 })
-
-KeyTab:AddDivider()
-
 KeyTab:AddButton({
     Name = "Get Key Link",
     Callback = function()
@@ -89,27 +83,9 @@ KeyTab:AddButton({
     Name = "Join Discord",
     Callback = function()
         setclipboard(Config.DiscordLink)
-        local request = (syn and syn.request) or (http and http.request) or http_request
-        if request then
-            request({
-                Url = "http://127.0.0.1:6463/rpc?v=1",
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json",
-                    ["Origin"] = "https://discord.com"
-                },
-                Body = HttpService:JSONEncode({
-                    cmd = "INVITE_BROWSER",
-                    args = {
-                        code = "example" -- Replace with actual invite code
-                    },
-                    nonce = HttpService:GenerateGUID(false)
-                })
-            })
-        end
         Antigravity:Notify({
             Title = "Discord",
-            Message = "Discord link copied / invite opened!",
+            Message = "Discord link copied!",
             Duration = 2
         })
     end
