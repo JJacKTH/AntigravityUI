@@ -227,10 +227,74 @@ function AntigravityUI:CreateWindow(options)
     -- Close button hover (always red tones)
     Animation:CreateHoverEffect(Window.CloseBtn, Color3.fromRGB(220, 100, 100), Color3.fromRGB(200, 80, 80))
     
-    -- Tab sidebar
+    -- Search Bar Area
+    Window.SearchContainer = Instance.new("Frame")
+    Window.SearchContainer.Name = "SearchContainer"
+    Window.SearchContainer.Size = UDim2.new(1, -10, 0, 30)
+    Window.SearchContainer.Position = UDim2.new(0, 5, 0, 45)
+    Window.SearchContainer.BackgroundColor3 = Theme.Current.Secondary
+    Window.SearchContainer.BorderSizePixel = 0
+    Window.SearchContainer.Parent = Window.Container
+    
+    Instance.new("UICorner", Window.SearchContainer).CornerRadius = UDim.new(0, 6)
+    
+    local searchIcon = Instance.new("ImageLabel")
+    searchIcon.Name = "Icon"
+    searchIcon.Size = UDim2.new(0, 16, 0, 16)
+    searchIcon.Position = UDim2.new(0, 10, 0.5, -8)
+    searchIcon.BackgroundTransparency = 1
+    searchIcon.Image = "rbxassetid://6031154871" -- Search icon
+    searchIcon.ImageColor3 = Theme.Current.SubText
+    searchIcon.Parent = Window.SearchContainer
+    
+    Window.SearchBar = Instance.new("TextBox")
+    Window.SearchBar.Name = "Input"
+    Window.SearchBar.Size = UDim2.new(1, -35, 1, 0)
+    Window.SearchBar.Position = UDim2.new(0, 35, 0, 0)
+    Window.SearchBar.BackgroundTransparency = 1
+    Window.SearchBar.Text = ""
+    Window.SearchBar.PlaceholderText = "Search features..."
+    Window.SearchBar.TextColor3 = Theme.Current.Text
+    Window.SearchBar.PlaceholderColor3 = Theme.Current.SubText
+    Window.SearchBar.TextSize = 14
+    Window.SearchBar.Font = Enum.Font.Gotham
+    Window.SearchBar.TextXAlignment = Enum.TextXAlignment.Left
+    Window.SearchBar.ClearTextOnFocus = false
+    Window.SearchBar.Parent = Window.SearchContainer
+    
+    -- Search Results Container (Floating)
+    Window.ClickBlocker = Instance.new("TextButton") -- Blocks clicks outside results
+    Window.ClickBlocker.Name = "ClickBlocker"
+    Window.ClickBlocker.Size = UDim2.new(1, 0, 1, 0)
+    Window.ClickBlocker.BackgroundTransparency = 1
+    Window.ClickBlocker.Text = ""
+    Window.ClickBlocker.Visible = false
+    Window.ClickBlocker.ZIndex = 50
+    Window.ClickBlocker.Parent = Window.Container
+    
+    Window.SearchResults = Instance.new("ScrollingFrame")
+    Window.SearchResults.Name = "SearchResults"
+    Window.SearchResults.Size = UDim2.new(1, -10, 0, 200)
+    Window.SearchResults.Position = UDim2.new(0, 5, 0, 80)
+    Window.SearchResults.BackgroundColor3 = Theme.Current.Secondary
+    Window.SearchResults.BorderSizePixel = 0
+    Window.SearchResults.Visible = false
+    Window.SearchResults.ZIndex = 51
+    Window.SearchResults.ScrollBarThickness = 2
+    Window.SearchResults.ScrollBarImageColor3 = Theme.Current.Accent
+    Window.SearchResults.Parent = Window.Container
+    
+    Instance.new("UICorner", Window.SearchResults).CornerRadius = UDim.new(0, 6)
+    
+    local resultsLayout = Instance.new("UIListLayout")
+    resultsLayout.FillDirection = Enum.FillDirection.Vertical
+    resultsLayout.Padding = UDim.new(0, 2)
+    resultsLayout.Parent = Window.SearchResults
+
+    -- Tab sidebar (Shifted down)
     Window.TabContainer = Instance.new("Frame")
-    Window.TabContainer.Size = UDim2.new(0, 140, 1, -50)
-    Window.TabContainer.Position = UDim2.new(0, 5, 0, 45)
+    Window.TabContainer.Size = UDim2.new(0, 140, 1, -90) -- Adjusted height
+    Window.TabContainer.Position = UDim2.new(0, 5, 0, 85) -- Shifted Y
     Window.TabContainer.BackgroundColor3 = Theme.Current.Secondary
     Window.TabContainer.BackgroundTransparency = 0.5
     Window.TabContainer.BorderSizePixel = 0
@@ -257,14 +321,124 @@ function AntigravityUI:CreateWindow(options)
         Window.TabScroll.CanvasSize = UDim2.new(0, 0, 0, tabLayout.AbsoluteContentSize.Y + 10)
     end)
     
-    -- Content area
+    -- Content area (Shifted down)
     Window.ContentContainer = Instance.new("Frame")
-    Window.ContentContainer.Size = UDim2.new(1, -160, 1, -55)
-    Window.ContentContainer.Position = UDim2.new(0, 150, 0, 45)
+    Window.ContentContainer.Size = UDim2.new(1, -160, 1, -95) -- Adjusted height
+    Window.ContentContainer.Position = UDim2.new(0, 150, 0, 85) -- Shifted Y
     Window.ContentContainer.BackgroundTransparency = 1
     Window.ContentContainer.ClipsDescendants = true
     Window.ContentContainer.Parent = Window.Container
     
+    -- ================================================================
+    -- GLOBAL SEARCH LOGIC
+    -- ================================================================
+    
+    local function UpdateSearchResults()
+        local query = Window.SearchBar.Text:lower()
+        
+        -- Clear existing results
+        for _, child in ipairs(Window.SearchResults:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        
+        if query == "" then
+            Window.SearchResults.Visible = false
+            Window.ClickBlocker.Visible = false
+            return
+        end
+        
+        local matches = {}
+        
+        -- Index and search
+        for _, tab in ipairs(Window.Tabs) do
+            if tab.Elements then
+                for _, element in ipairs(tab.Elements) do
+                    -- Check if element has a name/label to search
+                    local name = nil
+                    if element.Configs and element.Configs.Name then
+                        name = element.Configs.Name
+                    elseif element.Label and element.Label:IsA("TextLabel") then
+                        name = element.Label.Text
+                    end
+                    
+                    if name and string.find(name:lower(), query, 1, true) then
+                        table.insert(matches, {
+                            Name = name,
+                            Type = "Element", -- Could be specific like "Toggle", "Button"
+                            Tab = tab,
+                            Element = element
+                        })
+                    end
+                end
+            end
+        end
+        
+        -- Display results
+        if #matches > 0 then
+            Window.SearchResults.Visible = true
+            Window.ClickBlocker.Visible = true
+            Window.SearchResults.Size = UDim2.new(1, -10, 0, math.min(#matches * 35, 200)) -- Auto height
+            
+            for _, match in ipairs(matches) do
+                local btn = Instance.new("TextButton")
+                btn.Name = "ResultBtn"
+                btn.Size = UDim2.new(1, 0, 0, 30)
+                btn.BackgroundColor3 = Theme.Current.Tertiary
+                btn.BackgroundTransparency = 1 -- Transparent initially
+                btn.Text = "  " .. match.Name .. "  (" .. match.Tab.Name .. ")"
+                btn.TextColor3 = Theme.Current.Text
+                btn.TextSize = 13
+                btn.Font = Enum.Font.Gotham
+                btn.TextXAlignment = Enum.TextXAlignment.Left
+                btn.AutoButtonColor = false
+                btn.Parent = Window.SearchResults
+                
+                Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+                
+                -- Hover effect
+                btn.MouseEnter:Connect(function()
+                    Animation:Play(btn, {BackgroundTransparency = 0}, 0.1)
+                end)
+                btn.MouseLeave:Connect(function()
+                    Animation:Play(btn, {BackgroundTransparency = 1}, 0.1)
+                end)
+                
+                -- Click to jump
+                btn.MouseButton1Click:Connect(function()
+                    match.Tab:Select()
+                    Window.SearchBar.Text = "" -- Clear search
+                    Window.SearchResults.Visible = false
+                    Window.ClickBlocker.Visible = false
+                    
+                    -- Highlight effect on target element
+                    if match.Element.Container then
+                        local originalColor = match.Element.Container.BackgroundColor3
+                        task.spawn(function()
+                            -- Flash
+                            for i = 1, 3 do
+                                Animation:Play(match.Element.Container, {BackgroundColor3 = Theme.Current.Accent}, 0.2)
+                                task.wait(0.2)
+                                Animation:Play(match.Element.Container, {BackgroundColor3 = originalColor}, 0.2)
+                                task.wait(0.2)
+                            end
+                        end)
+                    end
+                end)
+            end
+        else
+            Window.SearchResults.Visible = false
+            Window.ClickBlocker.Visible = false
+        end
+    end
+    
+    Window.SearchBar:GetPropertyChangedSignal("Text"):Connect(UpdateSearchResults)
+    
+    -- Hide results when clicking outside
+    Window.ClickBlocker.MouseButton1Click:Connect(function()
+        Window.SearchResults.Visible = false
+        Window.ClickBlocker.Visible = false
+    end)
+
     Utility:MakeDraggable(Window.Container, Window.TitleBar)
     
     -- ================================================================
@@ -523,6 +697,26 @@ function AntigravityUI:CreateWindow(options)
                 Window.MinimizeBtn.BackgroundColor3 = Theme.Current.Tertiary
                 Window.MinimizeBtn.TextColor3 = Theme.Current.Text
             end
+            
+            -- Search Bar Refresh
+            if Window.SearchContainer then
+                Window.SearchContainer.BackgroundColor3 = Theme.Current.Secondary
+                local icon = Window.SearchContainer:FindFirstChild("Icon")
+                if icon then icon.ImageColor3 = Theme.Current.SubText end
+            end
+            if Window.SearchBar then
+                Window.SearchBar.TextColor3 = Theme.Current.Text
+                Window.SearchBar.PlaceholderColor3 = Theme.Current.SubText
+            end
+            if Window.SearchResults then
+                Window.SearchResults.BackgroundColor3 = Theme.Current.Secondary
+                Window.SearchResults.ScrollBarImageColor3 = Theme.Current.Accent
+            end
+            
+            -- Resize Lines Refresh
+            if Window.ResizeLine1 then Window.ResizeLine1.BackgroundColor3 = Theme.Current.SubText end
+            if Window.ResizeLine2 then Window.ResizeLine2.BackgroundColor3 = Theme.Current.SubText end
+
             -- Close button text
             if Window.CloseBtn then
                 Window.CloseBtn.TextColor3 = Theme.Current.Text
@@ -888,12 +1082,13 @@ function AntigravityUI:CreateWindow(options)
 end
 
 -- Notification system
+-- Notification system
 function AntigravityUI:Notify(options)
     options = options or {}
     local title = options.Title or "Notification"
     local message = options.Message or ""
     local duration = options.Duration or 3
-    local notifType = options.Type or "Info"
+    local notifType = options.Type or "Info" -- Success, Warning, Error, Info
     
     local parent = self:GetParent()
     if not parent then return end
@@ -902,26 +1097,35 @@ function AntigravityUI:Notify(options)
     if not notifContainer then
         notifContainer = Instance.new("Frame")
         notifContainer.Name = "NotificationContainer"
-        notifContainer.Size = UDim2.new(0, 300, 1, 0)
-        notifContainer.Position = UDim2.new(1, -310, 0, 10)
+        notifContainer.Size = UDim2.new(0, 320, 1, 0) -- Slightly wider
+        notifContainer.Position = UDim2.new(1, -330, 0, 20)
         notifContainer.BackgroundTransparency = 1
         notifContainer.Parent = parent
         
         local notifLayout = Instance.new("UIListLayout")
         notifLayout.FillDirection = Enum.FillDirection.Vertical
         notifLayout.Padding = UDim.new(0, 10)
-        notifLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+        notifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Stack from bottom? or Top? Top is better for visibility.
+        notifLayout.VerticalAlignment = Enum.VerticalAlignment.End -- Creating from bottom stack usually looks modern
         notifLayout.Parent = notifContainer
     end
     
     local typeColors = {
         Info = Theme.Current.Accent,
-        Success = Color3.fromRGB(100, 200, 100),
-        Warning = Color3.fromRGB(255, 200, 100),
-        Error = Color3.fromRGB(255, 100, 100)
+        Success = Color3.fromRGB(80, 220, 100),
+        Warning = Color3.fromRGB(255, 190, 60),
+        Error = Color3.fromRGB(240, 70, 70)
+    }
+    
+    local typeIcons = {
+        Info = "rbxassetid://3944686258",
+        Success = "rbxassetid://3944680095",
+        Warning = "rbxassetid://3944669909",
+        Error = "rbxassetid://3944672958"
     }
     
     local notif = Instance.new("Frame")
+    notif.Name = "Notification"
     notif.Size = UDim2.new(1, 0, 0, 70)
     notif.BackgroundColor3 = Theme.Current.Background
     notif.BorderSizePixel = 0
@@ -930,15 +1134,26 @@ function AntigravityUI:Notify(options)
     
     Instance.new("UICorner", notif).CornerRadius = UDim.new(0, 8)
     
+    -- Status Indicator (Left Bar)
     local indicator = Instance.new("Frame")
     indicator.Size = UDim2.new(0, 4, 1, 0)
     indicator.BackgroundColor3 = typeColors[notifType] or Theme.Current.Accent
     indicator.BorderSizePixel = 0
     indicator.Parent = notif
     
+    -- Icon
+    local icon = Instance.new("ImageLabel")
+    icon.Size = UDim2.new(0, 24, 0, 24)
+    icon.Position = UDim2.new(0, 15, 0.5, -12)
+    icon.BackgroundTransparency = 1
+    icon.Image = typeIcons[notifType] or typeIcons.Info
+    icon.ImageColor3 = typeColors[notifType] or Theme.Current.Accent
+    icon.Parent = notif
+    
+    -- Title
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -20, 0, 25)
-    titleLabel.Position = UDim2.new(0, 15, 0, 8)
+    titleLabel.Size = UDim2.new(1, -50, 0, 20)
+    titleLabel.Position = UDim2.new(0, 50, 0, 12)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title
     titleLabel.TextColor3 = Theme.Current.Text
@@ -947,9 +1162,10 @@ function AntigravityUI:Notify(options)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = notif
     
+    -- Message
     local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, -20, 0, 30)
-    messageLabel.Position = UDim2.new(0, 15, 0, 32)
+    messageLabel.Size = UDim2.new(1, -50, 0, 30)
+    messageLabel.Position = UDim2.new(0, 50, 0, 32)
     messageLabel.BackgroundTransparency = 1
     messageLabel.Text = message
     messageLabel.TextColor3 = Theme.Current.SubText
@@ -957,19 +1173,31 @@ function AntigravityUI:Notify(options)
     messageLabel.Font = Enum.Font.Gotham
     messageLabel.TextXAlignment = Enum.TextXAlignment.Left
     messageLabel.TextWrapped = true
+    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
     messageLabel.Parent = notif
     
+    -- Animation
     notif.Position = UDim2.new(1, 50, 0, 0)
     Animation:Play(notif, {Position = UDim2.new(0, 0, 0, 0)}, 0.3)
     
     task.delay(duration, function()
         Animation:Play(notif, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.3)
+        -- Fade out contents
+        for _, child in ipairs(notif:GetChildren()) do
+            if child:IsA("ImageLabel") then
+                Animation:Play(child, {ImageTransparency = 1}, 0.3)
+            elseif child:IsA("TextLabel") then
+                Animation:Play(child, {TextTransparency = 1}, 0.3)
+            elseif child:IsA("Frame") then
+                Animation:Play(child, {BackgroundTransparency = 1}, 0.3)
+            end
+        end
+        
         task.wait(0.3)
         notif:Destroy()
     end)
-    
-    return notif
-end
+end    
+
 
 function AntigravityUI:SetTheme(themeName)
     if Theme.Set then Theme:Set(themeName) end
