@@ -1,0 +1,23 @@
+# Git ignore for Roblox UI Library
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+*.rbxlx.lock
+*.rbxl.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
