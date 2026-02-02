@@ -80,7 +80,8 @@ function Section.new(tab, options, Theme, Animation, ConfigHandler, Components)
     self.Content = Instance.new("Frame")
     self.Content.Name = "Content"
     self.Content.Size = UDim2.new(1, -10, 0, 0)
-    self.Content.Position = UDim2.new(0, 5, 0, 32)
+    self.Content.Position = UDim2.new(0.5, 0, 0, 32)
+    self.Content.AnchorPoint = Vector2.new(0.5, 0)
     self.Content.BackgroundTransparency = 1
     self.Content.Parent = self.Container
     
@@ -88,6 +89,7 @@ function Section.new(tab, options, Theme, Animation, ConfigHandler, Components)
     contentLayout.FillDirection = Enum.FillDirection.Vertical
     contentLayout.Padding = UDim.new(0, 5)
     contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     contentLayout.Parent = self.Content
     
     -- Create a fake "page" object for components to use

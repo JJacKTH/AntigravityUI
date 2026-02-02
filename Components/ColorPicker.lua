@@ -35,6 +35,9 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
         return string.format("#%02X%02X%02X", r, g, b)
     end
     
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "ColorPicker_" .. self.Name
@@ -44,6 +47,7 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BorderSizePixel = 0
     self.Container.ClipsDescendants = false
     self.Container.ZIndex = 2
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")

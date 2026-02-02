@@ -64,6 +64,9 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         end
     end
     
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Dropdown_" .. self.Name
@@ -73,6 +76,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BorderSizePixel = 0
     self.Container.ClipsDescendants = false
     self.Container.ZIndex = 2
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")

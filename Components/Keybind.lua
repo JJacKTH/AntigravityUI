@@ -28,6 +28,9 @@ function Keybind.new(tab, options, Theme, Animation, ConfigHandler)
         return self.Value.Name
     end
     
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Keybind_" .. self.Name
@@ -35,6 +38,7 @@ function Keybind.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BackgroundColor3 = Theme.Current.Secondary
     self.Container.BackgroundTransparency = 0
     self.Container.BorderSizePixel = 0
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")

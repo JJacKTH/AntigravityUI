@@ -23,6 +23,9 @@ function Slider.new(tab, options, Theme, Animation, ConfigHandler)
     self.Value = self.Default
     self.Dragging = false
     
+    -- Get current element count for ordering
+    local elementCount = #tab.Page:GetChildren()
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Slider_" .. self.Name
@@ -30,6 +33,7 @@ function Slider.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BackgroundColor3 = Theme.Current.Secondary
     self.Container.BackgroundTransparency = 0
     self.Container.BorderSizePixel = 0
+    self.Container.LayoutOrder = elementCount
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")
