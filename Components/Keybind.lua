@@ -20,6 +20,14 @@ function Keybind.new(tab, options, Theme, Animation, ConfigHandler)
     self.Value = self.Default
     self.Listening = false
     
+    -- Helper method (defined early for use during UI creation)
+    function self:GetKeyName()
+        if self.Value == Enum.KeyCode.Unknown then
+            return "None"
+        end
+        return self.Value.Name
+    end
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Keybind_" .. self.Name
@@ -118,14 +126,7 @@ function Keybind.new(tab, options, Theme, Animation, ConfigHandler)
         Animation:CreateHoverEffect(self.Button, Theme.Current.Accent, Theme.Current.Tertiary)
     end
     
-    -- Methods
-    function self:GetKeyName()
-        if self.Value == Enum.KeyCode.Unknown then
-            return "None"
-        end
-        return self.Value.Name
-    end
-    
+    -- Additional Methods
     function self:Set(keyCode)
         self.Value = keyCode
         self.Button.Text = self:GetKeyName()
