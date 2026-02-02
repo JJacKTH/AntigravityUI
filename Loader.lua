@@ -580,6 +580,54 @@ function AntigravityUI:CreateWindow(options)
                         if element.Text then
                             element.Text.TextColor3 = Theme.Current.SubText
                         end
+                        
+                        -- Section has nested elements - refresh them recursively
+                        if element.Elements then
+                            for _, nestedElement in ipairs(element.Elements) do
+                                -- Container
+                                if nestedElement.Container then
+                                    if nestedElement.Container:FindFirstChild("ButtonElement") then
+                                        local btn = nestedElement.Container:FindFirstChild("ButtonElement")
+                                        if btn then
+                                            btn.BackgroundColor3 = Theme.Current.Tertiary
+                                            btn.TextColor3 = Theme.Current.Text
+                                        end
+                                    else
+                                        nestedElement.Container.BackgroundColor3 = Theme.Current.Secondary
+                                    end
+                                end
+                                -- Labels
+                                if nestedElement.Label then
+                                    nestedElement.Label.TextColor3 = Theme.Current.Text
+                                end
+                                -- Toggle
+                                if nestedElement.SwitchBg then
+                                    nestedElement.SwitchBg.BackgroundColor3 = nestedElement.Value and Theme.Current.Accent or Theme.Current.Tertiary
+                                end
+                                -- Slider
+                                if nestedElement.Track then
+                                    nestedElement.Track.BackgroundColor3 = Theme.Current.Tertiary
+                                end
+                                if nestedElement.Fill then
+                                    nestedElement.Fill.BackgroundColor3 = Theme.Current.Accent
+                                end
+                                if nestedElement.ValueLabel then
+                                    nestedElement.ValueLabel.TextColor3 = Theme.Current.Accent
+                                end
+                                -- Dropdown
+                                if nestedElement.Button and nestedElement.Button.Name == "DropdownButton" then
+                                    nestedElement.Button.BackgroundColor3 = Theme.Current.Tertiary
+                                end
+                                if nestedElement.SelectedLabel then
+                                    nestedElement.SelectedLabel.TextColor3 = Theme.Current.Text
+                                end
+                                -- Keybind
+                                if nestedElement.Button and nestedElement.Button.Name == "KeyButton" then
+                                    nestedElement.Button.BackgroundColor3 = Theme.Current.Tertiary
+                                    nestedElement.Button.TextColor3 = Theme.Current.Text
+                                end
+                            end
+                        end
                     end
                 end
             end
