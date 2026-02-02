@@ -34,6 +34,36 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         self.Value = self.Default or (self.Options[1] or "")
     end
     
+    -- Helper methods (defined early for use during UI creation)
+    function self:GetDisplayText()
+        if self.Multi then
+            local selected = self:GetSelectedList()
+            if #selected == 0 then
+                return "None selected"
+            elseif #selected == 1 then
+                return selected[1]
+            else
+                return #selected .. " selected"
+            end
+        else
+            return self.Value or "None"
+        end
+    end
+    
+    function self:GetSelectedList()
+        if self.Multi then
+            local list = {}
+            for opt, selected in pairs(self.Value) do
+                if selected then
+                    table.insert(list, opt)
+                end
+            end
+            return list
+        else
+            return {self.Value}
+        end
+    end
+    
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Dropdown_" .. self.Name
@@ -346,36 +376,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         end
     end)
     
-    -- Methods
-    function self:GetDisplayText()
-        if self.Multi then
-            local selected = self:GetSelectedList()
-            if #selected == 0 then
-                return "None selected"
-            elseif #selected == 1 then
-                return selected[1]
-            else
-                return #selected .. " selected"
-            end
-        else
-            return self.Value or "None"
-        end
-    end
-    
-    function self:GetSelectedList()
-        if self.Multi then
-            local list = {}
-            for opt, selected in pairs(self.Value) do
-                if selected then
-                    table.insert(list, opt)
-                end
-            end
-            return list
-        else
-            return {self.Value}
-        end
-    end
-    
+    -- Additional Methods
     function self:OpenList()
         self.Open = true
         self.ListContainer.Visible = true
