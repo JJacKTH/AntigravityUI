@@ -640,7 +640,7 @@ function AntigravityUI:CreateWindow(options)
         Window.FloatingIcon.BorderSizePixel = 0
         Window.FloatingIcon.Image = options.FloatingIcon.Image or "rbxassetid://94618813054930"
         Window.FloatingIcon.ImageColor3 = Theme.Current.Accent
-        Window.FloatingIcon.Visible = false
+        Window.FloatingIcon.Visible = true
         Window.FloatingIcon.Parent = parent
         
         Instance.new("UICorner", Window.FloatingIcon).CornerRadius = UDim.new(0, 10)
