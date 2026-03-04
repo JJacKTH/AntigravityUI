@@ -1127,8 +1127,7 @@ function AntigravityUI:Notify(options)
         local notifLayout = Instance.new("UIListLayout")
         notifLayout.FillDirection = Enum.FillDirection.Vertical
         notifLayout.Padding = UDim.new(0, 10)
-        notifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom -- Stack from bottom? or Top? Top is better for visibility.
-        notifLayout.VerticalAlignment = Enum.VerticalAlignment.End -- Creating from bottom stack usually looks modern
+        notifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
         notifLayout.Parent = notifContainer
     end
     
