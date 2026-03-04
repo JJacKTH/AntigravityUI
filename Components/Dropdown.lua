@@ -383,6 +383,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     -- Additional Methods
     function self:OpenList()
         self.Open = true
+        self.Container.ZIndex = 110
         self.ListContainer.Visible = true
         
         local optCount = 0
@@ -409,6 +410,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     
     function self:Close()
         self.Open = false
+        self.Container.ZIndex = 2
         
         if Animation then
             Animation:Play(self.ListContainer, {Size = UDim2.new(1, -20, 0, 0)}, 0.2)
