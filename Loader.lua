@@ -94,6 +94,7 @@ function AntigravityUI:CreateWindow(options)
     Window.ActiveTab = nil
     Window.Minimized = false
     Window.Visible = true
+    Window.OnClose = options.OnClose
     
     if Theme.Presets and Theme.Presets[Window.Theme] then
         Theme.Current = Theme.Presets[Window.Theme]
@@ -637,7 +638,7 @@ function AntigravityUI:CreateWindow(options)
         Window.FloatingIcon.AnchorPoint = Vector2.new(0, 0.5)
         Window.FloatingIcon.BackgroundColor3 = Theme.Current.Background
         Window.FloatingIcon.BorderSizePixel = 0
-        Window.FloatingIcon.Image = options.FloatingIcon.Image or "rbxassetid://7733960981"
+        Window.FloatingIcon.Image = options.FloatingIcon.Image or "rbxassetid://94618813054930"
         Window.FloatingIcon.ImageColor3 = Theme.Current.Accent
         Window.FloatingIcon.Visible = false
         Window.FloatingIcon.Parent = parent
@@ -664,7 +665,7 @@ function AntigravityUI:CreateWindow(options)
     function Window:Maximize()
         Window.Minimized = false
         Window.Container.Visible = true
-        if Window.FloatingIcon then Window.FloatingIcon.Visible = false end
+        if Window.FloatingIcon then Window.FloatingIcon.Visible = true end
     end
     
     function Window:Toggle()
@@ -679,14 +680,14 @@ function AntigravityUI:CreateWindow(options)
     
     function Window:Show()
         Window.Visible = true
-        if Window.Minimized then
-            if Window.FloatingIcon then Window.FloatingIcon.Visible = true end
-        else
-            Window.Container.Visible = true
-        end
+        Window.Container.Visible = true
+        if Window.FloatingIcon then Window.FloatingIcon.Visible = true end
     end
     
     function Window:Destroy()
+        if Window.OnClose then
+            pcall(Window.OnClose)
+        end
         Window.Container:Destroy()
         if Window.FloatingIcon then Window.FloatingIcon:Destroy() end
     end

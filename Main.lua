@@ -106,6 +106,7 @@ function AntigravityUI:CreateWindow(options)
     Window.ActiveTab = nil
     Window.Minimized = false
     Window.Visible = true
+    Window.OnClose = options.OnClose -- Custom callback
     
     -- Set theme
     if Theme.Presets and Theme.Presets[Window.Theme] then
@@ -292,7 +293,7 @@ function AntigravityUI:CreateWindow(options)
     -- Floating Icon
     Window.FloatingIcon = nil
     if options.FloatingIcon and options.FloatingIcon.Enabled ~= false then
-        local iconImage = options.FloatingIcon.Image or "rbxassetid://7733960981"
+        local iconImage = options.FloatingIcon.Image or "rbxassetid://94618813054930"
         local iconPosition = options.FloatingIcon.Position or UDim2.new(0, 20, 0.5, 0)
         
         Window.FloatingIcon = Instance.new("ImageButton")
@@ -350,7 +351,7 @@ function AntigravityUI:CreateWindow(options)
         Window.Minimized = false
         Window.Container.Visible = true
         if Window.FloatingIcon then
-            Window.FloatingIcon.Visible = false
+            Window.FloatingIcon.Visible = true -- Keep visible
         end
     end
     
@@ -372,16 +373,17 @@ function AntigravityUI:CreateWindow(options)
     
     function Window:Show()
         Window.Visible = true
-        if Window.Minimized then
-            if Window.FloatingIcon then
-                Window.FloatingIcon.Visible = true
-            end
-        else
-            Window.Container.Visible = true
+        Window.Container.Visible = true
+        if Window.FloatingIcon then
+            Window.FloatingIcon.Visible = true
         end
     end
     
     function Window:Destroy()
+        if Window.OnClose then
+            local success, err = pcall(Window.OnClose)
+            if not success then warn("[AntigravityUI] Error in OnClose callback:", err) end
+        end
         Window.Container:Destroy()
         if Window.FloatingIcon then
             Window.FloatingIcon:Destroy()
