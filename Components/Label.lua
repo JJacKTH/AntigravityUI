@@ -37,7 +37,9 @@ function Label.new(tab, options, Theme, Animation)
     self.Label.TextSize = 13
     self.Label.Font = Enum.Font.Gotham
     self.Label.TextXAlignment = Enum.TextXAlignment.Left
+    self.Label.TextYAlignment = Enum.TextYAlignment.Top
     self.Label.TextWrapped = true
+    self.Label.RichText = true
     self.Label.AutomaticSize = Enum.AutomaticSize.Y
     self.Label.Parent = self.Container
     
