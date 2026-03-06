@@ -19,16 +19,17 @@ function Label.new(tab, options, Theme, Animation)
     -- Container
     self.Container = Instance.new("Frame")
     self.Container.Name = "Label_" .. self.Name
-    self.Container.Size = UDim2.new(1, -10, 0, 25)
+    self.Container.Size = UDim2.new(1, -10, 0, 0)
     self.Container.BackgroundTransparency = 1
     self.Container.BorderSizePixel = 0
     self.Container.LayoutOrder = elementCount
+    self.Container.AutomaticSize = Enum.AutomaticSize.Y
     self.Container.Parent = tab.Page
     
     -- Label text
     self.Label = Instance.new("TextLabel")
     self.Label.Name = "Text"
-    self.Label.Size = UDim2.new(1, -10, 1, 0)
+    self.Label.Size = UDim2.new(1, -10, 0, 0)
     self.Label.Position = UDim2.new(0, 5, 0, 0)
     self.Label.BackgroundTransparency = 1
     self.Label.Text = self.Text
@@ -37,6 +38,7 @@ function Label.new(tab, options, Theme, Animation)
     self.Label.Font = Enum.Font.Gotham
     self.Label.TextXAlignment = Enum.TextXAlignment.Left
     self.Label.TextWrapped = true
+    self.Label.AutomaticSize = Enum.AutomaticSize.Y
     self.Label.Parent = self.Container
     
     -- Methods
