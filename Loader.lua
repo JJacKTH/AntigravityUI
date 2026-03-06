@@ -88,8 +88,14 @@ function AntigravityUI:CreateWindow(options)
     Window.AutoLoad = options.AutoLoad or false
     Window.FolderName = options.FolderName
     Window.Resizable = options.Resizable ~= false  -- Default true
-    
-    -- ... (rest of options)
+    Window.MinSize = options.MinSize or UDim2.new(0, 400, 0, 300)
+    Window.MaxSize = options.MaxSize or UDim2.new(0, 900, 0, 700)
+    Window.SaveSize = options.SaveSize ~= false  -- Default true
+    Window.Tabs = {}
+    Window.ActiveTab = nil
+    Window.Minimized = false
+    Window.Visible = true
+    Window.OnClose = options.OnClose
     
     if Theme.Presets and Theme.Presets[Window.Theme] then
         Theme.Current = Theme.Presets[Window.Theme]
