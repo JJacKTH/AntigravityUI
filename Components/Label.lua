@@ -26,23 +26,23 @@ function Label.new(tab, options, Theme, Animation)
     self.Container.Parent = tab.Page
     
     -- Label text
-    self.Element = Instance.new("TextLabel")
-    self.Element.Name = "Text"
-    self.Element.Size = UDim2.new(1, -10, 1, 0)
-    self.Element.Position = UDim2.new(0, 5, 0, 0)
-    self.Element.BackgroundTransparency = 1
-    self.Element.Text = self.Text
-    self.Element.TextColor3 = Theme.Current.SubText
-    self.Element.TextSize = 13
-    self.Element.Font = Enum.Font.Gotham
-    self.Element.TextXAlignment = Enum.TextXAlignment.Left
-    self.Element.TextWrapped = true
-    self.Element.Parent = self.Container
+    self.Label = Instance.new("TextLabel")
+    self.Label.Name = "Text"
+    self.Label.Size = UDim2.new(1, -10, 1, 0)
+    self.Label.Position = UDim2.new(0, 5, 0, 0)
+    self.Label.BackgroundTransparency = 1
+    self.Label.Text = self.Text
+    self.Label.TextColor3 = Theme.Current.SubText
+    self.Label.TextSize = 13
+    self.Label.Font = Enum.Font.Gotham
+    self.Label.TextXAlignment = Enum.TextXAlignment.Left
+    self.Label.TextWrapped = true
+    self.Label.Parent = self.Container
     
     -- Methods
     function self:Set(text)
         self.Text = text
-        self.Element.Text = text
+        self.Label.Text = text
     end
     
     function self:Get()

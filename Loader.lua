@@ -860,7 +860,7 @@ function AntigravityUI:CreateWindow(options)
                         if element.RightLine then
                             element.RightLine.BackgroundColor3 = Theme.Current.Divider
                         end
-                        if element.Text then
+                        if element.Text and typeof(element.Text) == "Instance" then
                             element.Text.TextColor3 = Theme.Current.SubText
                         end
                         
