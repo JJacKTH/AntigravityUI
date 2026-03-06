@@ -217,7 +217,12 @@ function ConfigManager:ListGames()
 end
 
 -- Create a config handler for a window
-function ConfigManager:CreateHandler(gameName, configName, autoSave, autoLoad)
+function ConfigManager:CreateHandler(gameName, configName, autoSave, autoLoad, baseFolder)
+    -- Update base folder if provided
+    if baseFolder then
+        self.BaseFolder = baseFolder
+    end
+    
     -- Set current game
     self:SetGame(gameName)
     

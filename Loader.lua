@@ -86,22 +86,17 @@ function AntigravityUI:CreateWindow(options)
     Window.ConfigName = options.ConfigName or "Config"
     Window.AutoSave = options.AutoSave or false
     Window.AutoLoad = options.AutoLoad or false
+    Window.FolderName = options.FolderName
     Window.Resizable = options.Resizable ~= false  -- Default true
-    Window.MinSize = options.MinSize or UDim2.new(0, 400, 0, 300)
-    Window.MaxSize = options.MaxSize or UDim2.new(0, 900, 0, 700)
-    Window.SaveSize = options.SaveSize ~= false  -- Default true
-    Window.Tabs = {}
-    Window.ActiveTab = nil
-    Window.Minimized = false
-    Window.Visible = true
-    Window.OnClose = options.OnClose
+    
+    -- ... (rest of options)
     
     if Theme.Presets and Theme.Presets[Window.Theme] then
         Theme.Current = Theme.Presets[Window.Theme]
     end
     
-    -- CreateHandler(gameName, configName, autoSave, autoLoad)
-    Window.ConfigHandler = ConfigManager:CreateHandler(Window.GameName, Window.ConfigName, Window.AutoSave, Window.AutoLoad)
+    -- CreateHandler(gameName, configName, autoSave, autoLoad, baseFolder)
+    Window.ConfigHandler = ConfigManager:CreateHandler(Window.GameName, Window.ConfigName, Window.AutoSave, Window.AutoLoad, Window.FolderName)
     
     -- Register Theme for save/load
     Window.ConfigHandler:Register("__Theme__", "Theme", 
