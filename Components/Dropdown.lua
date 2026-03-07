@@ -77,6 +77,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.ClipsDescendants = false
     self.Container.ZIndex = 2
     self.Container.LayoutOrder = elementCount
+    self.Container.Active = true
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")
@@ -153,6 +154,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     self.ListContainer.ClipsDescendants = true
     self.ListContainer.Visible = false
     self.ListContainer.ZIndex = 100
+    self.ListContainer.Active = true
     self.ListContainer.Parent = self.Container
     
     local listCorner = Instance.new("UICorner")

@@ -29,6 +29,7 @@ function Textbox.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BackgroundTransparency = 0
     self.Container.BorderSizePixel = 0
     self.Container.LayoutOrder = elementCount
+    self.Container.Active = true
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")

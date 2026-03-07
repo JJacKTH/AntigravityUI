@@ -24,6 +24,7 @@ function Button.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.BackgroundTransparency = 1
     self.Container.BorderSizePixel = 0
     self.Container.LayoutOrder = elementCount
+    self.Container.Active = true
     self.Container.Parent = tab.Page
     
     -- Button element

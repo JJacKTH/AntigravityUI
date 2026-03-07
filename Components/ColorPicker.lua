@@ -48,6 +48,7 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
     self.Container.ClipsDescendants = false
     self.Container.ZIndex = 2
     self.Container.LayoutOrder = elementCount
+    self.Container.Active = true
     self.Container.Parent = tab.Page
     
     local containerCorner = Instance.new("UICorner")
@@ -99,6 +100,7 @@ function ColorPicker.new(tab, options, Theme, Animation, ConfigHandler)
     self.PickerPanel.BorderSizePixel = 0
     self.PickerPanel.Visible = false
     self.PickerPanel.ZIndex = 100
+    self.PickerPanel.Active = true
     self.PickerPanel.Parent = self.Container
     
     local pickerCorner = Instance.new("UICorner")

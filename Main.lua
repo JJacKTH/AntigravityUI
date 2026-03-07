@@ -133,6 +133,7 @@ function AntigravityUI:CreateWindow(options)
     Window.Container.BackgroundTransparency = 0
     Window.Container.BorderSizePixel = 0
     Window.Container.ClipsDescendants = true
+    Window.Container.Active = true
     Window.Container.Parent = parent
     
     -- Corner radius
@@ -154,6 +155,7 @@ function AntigravityUI:CreateWindow(options)
     Window.TitleBar.BackgroundColor3 = Theme.Current.Secondary
     Window.TitleBar.BackgroundTransparency = 0
     Window.TitleBar.BorderSizePixel = 0
+    Window.TitleBar.Active = true
     Window.TitleBar.Parent = Window.Container
     
     local titleCorner = Instance.new("UICorner")
@@ -247,6 +249,7 @@ function AntigravityUI:CreateWindow(options)
     Window.TabContainer.BackgroundColor3 = Theme.Current.Secondary
     Window.TabContainer.BackgroundTransparency = 0.5
     Window.TabContainer.BorderSizePixel = 0
+    Window.TabContainer.Active = true
     Window.TabContainer.Parent = Window.Container
     
     local tabCorner = Instance.new("UICorner")
@@ -263,6 +266,7 @@ function AntigravityUI:CreateWindow(options)
     Window.TabScroll.ScrollBarThickness = 2
     Window.TabScroll.ScrollBarImageColor3 = Theme.Current.Accent
     Window.TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Window.TabScroll.Active = true
     Window.TabScroll.Parent = Window.TabContainer
     
     local tabLayout = Instance.new("UIListLayout")
@@ -283,6 +287,7 @@ function AntigravityUI:CreateWindow(options)
     Window.ContentContainer.BackgroundTransparency = 1
     Window.ContentContainer.BorderSizePixel = 0
     Window.ContentContainer.ClipsDescendants = true
+    Window.ContentContainer.Active = true
     Window.ContentContainer.Parent = Window.Container
     
     -- Make window draggable
@@ -449,6 +454,7 @@ function AntigravityUI:CreateWindow(options)
         Tab.Page.ScrollBarImageColor3 = Theme.Current.Accent
         Tab.Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Tab.Page.Visible = false
+        Tab.Page.Active = true
         Tab.Page.Parent = Window.ContentContainer
         
         local pageLayout = Instance.new("UIListLayout")
