@@ -343,7 +343,17 @@ function AntigravityUI:CreateWindow(options)
         end
     end
     
-    -- Window methods
+    -- Global Toggle Key support
+    Window.ToggleKey = options.ToggleKey
+    if Window.ToggleKey == nil then Window.ToggleKey = Enum.KeyCode.K end -- Default to K if not specified
+    
+    local UserInputService = game:GetService("UserInputService")
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and Window.ToggleKey and input.KeyCode == Window.ToggleKey then
+            Window:Toggle(true) -- Pass true to indicate keybind toggle (center it)
+        end
+    end)
+
     function Window:Minimize()
         Window.Minimized = true
         Window.Container.Visible = false
@@ -352,17 +362,23 @@ function AntigravityUI:CreateWindow(options)
         end
     end
     
-    function Window:Maximize()
+    function Window:Maximize(forceCenter)
         Window.Minimized = false
         Window.Container.Visible = true
+        
+        -- Center the UI to prevent it from being lost off-screen
+        if forceCenter or options.CenterOnToggle ~= false then
+            Window.Container.Position = UDim2.new(0.5, 0, 0.5, 0)
+        end
+        
         if Window.FloatingIcon then
             Window.FloatingIcon.Visible = true -- Keep visible
         end
     end
     
-    function Window:Toggle()
+    function Window:Toggle(forceCenter)
         if Window.Minimized then
-            Window:Maximize()
+            Window:Maximize(forceCenter)
         else
             Window:Minimize()
         end
