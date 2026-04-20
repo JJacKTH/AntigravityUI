@@ -43,6 +43,8 @@ local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/An
 local Window = UI:CreateWindow({
     Title = "My Hub",
     Theme = "Dark", -- Dark, Light, PastelBlue, PastelGreen
+    ToggleKey = Enum.KeyCode.K, -- Global toggle key
+    CenterOnToggle = true, -- Center UI when toggled via keybind
     AutoSave = true,
     FloatingIcon = { Enabled = true }
 })
@@ -89,9 +91,10 @@ Tab:AddSlider({
 
 Tab:AddKeybind({
     Name = "Toggle UI",
-    Default = Enum.KeyCode.RightControl,
-    Callback = function()
-        Window:Toggle()
+    Default = Enum.KeyCode.K,
+    Flag = "ToggleUIKey",
+    Callback = function(key)
+        Window.ToggleKey = key -- Update dynamic global toggle key
     end
 })
 ```
@@ -156,6 +159,8 @@ local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JJacKTH/An
 local Window = UI:CreateWindow({
     Title = "My Hub",
     Theme = "Dark", -- Dark, Light, PastelBlue, PastelGreen
+    ToggleKey = Enum.KeyCode.K, -- ปุ่มลัดเปิด/ปิด UI ส่วนกลาง
+    CenterOnToggle = true, -- จัด UI ให้อยู่ตรงกลางอัตโนมัติเมื่อกดเปิดผ่านปุ่มลัด
     AutoSave = true,
     FloatingIcon = { Enabled = true }
 })
@@ -202,9 +207,10 @@ Tab:AddSlider({
 
 Tab:AddKeybind({
     Name = "เปิด/ปิด UI",
-    Default = Enum.KeyCode.RightControl,
-    Callback = function()
-        Window:Toggle()
+    Default = Enum.KeyCode.K,
+    Flag = "ToggleUIKey",
+    Callback = function(key)
+        Window.ToggleKey = key -- อัปเดตปุ่มลัดใหม่
     end
 })
 ```
