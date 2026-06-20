@@ -216,6 +216,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     self.OptionsList.Parent = self.ListContainer
     
     local optionsLayout = Instance.new("UIListLayout")
+    optionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
     optionsLayout.FillDirection = Enum.FillDirection.Vertical
     optionsLayout.Padding = UDim.new(0, 2)
     optionsLayout.Parent = self.OptionsList

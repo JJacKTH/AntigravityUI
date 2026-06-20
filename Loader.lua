@@ -8,24 +8,26 @@
 
 local BASE_URL = "https://raw.githubusercontent.com/JJacKTH/AntigravityUI/main/"
 
+local cb = "?cb=" .. tostring(os.time())
+
 -- Load all modules
-local Theme = loadstring(game:HttpGet(BASE_URL .. "Core/Theme.lua"))()
-local Animation = loadstring(game:HttpGet(BASE_URL .. "Core/Animation.lua"))()
-local Utility = loadstring(game:HttpGet(BASE_URL .. "Core/Utility.lua"))()
-local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Config/ConfigManager.lua"))()
+local Theme = loadstring(game:HttpGet(BASE_URL .. "Core/Theme.lua" .. cb))()
+local Animation = loadstring(game:HttpGet(BASE_URL .. "Core/Animation.lua" .. cb))()
+local Utility = loadstring(game:HttpGet(BASE_URL .. "Core/Utility.lua" .. cb))()
+local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Config/ConfigManager.lua" .. cb))()
 
 -- Load components
 local Components = {
-    Button = loadstring(game:HttpGet(BASE_URL .. "Components/Button.lua"))(),
-    Toggle = loadstring(game:HttpGet(BASE_URL .. "Components/Toggle.lua"))(),
-    Textbox = loadstring(game:HttpGet(BASE_URL .. "Components/Textbox.lua"))(),
-    Dropdown = loadstring(game:HttpGet(BASE_URL .. "Components/Dropdown.lua"))(),
-    Slider = loadstring(game:HttpGet(BASE_URL .. "Components/Slider.lua"))(),
-    ColorPicker = loadstring(game:HttpGet(BASE_URL .. "Components/ColorPicker.lua"))(),
-    Keybind = loadstring(game:HttpGet(BASE_URL .. "Components/Keybind.lua"))(),
-    Label = loadstring(game:HttpGet(BASE_URL .. "Components/Label.lua"))(),
-    Section = loadstring(game:HttpGet(BASE_URL .. "Components/Section.lua"))(),
-    Divider = loadstring(game:HttpGet(BASE_URL .. "Components/Divider.lua"))()
+    Button = loadstring(game:HttpGet(BASE_URL .. "Components/Button.lua" .. cb))(),
+    Toggle = loadstring(game:HttpGet(BASE_URL .. "Components/Toggle.lua" .. cb))(),
+    Textbox = loadstring(game:HttpGet(BASE_URL .. "Components/Textbox.lua" .. cb))(),
+    Dropdown = loadstring(game:HttpGet(BASE_URL .. "Components/Dropdown.lua" .. cb))(),
+    Slider = loadstring(game:HttpGet(BASE_URL .. "Components/Slider.lua" .. cb))(),
+    ColorPicker = loadstring(game:HttpGet(BASE_URL .. "Components/ColorPicker.lua" .. cb))(),
+    Keybind = loadstring(game:HttpGet(BASE_URL .. "Components/Keybind.lua" .. cb))(),
+    Label = loadstring(game:HttpGet(BASE_URL .. "Components/Label.lua" .. cb))(),
+    Section = loadstring(game:HttpGet(BASE_URL .. "Components/Section.lua" .. cb))(),
+    Divider = loadstring(game:HttpGet(BASE_URL .. "Components/Divider.lua" .. cb))()
 }
 
 -- ================================================================
