@@ -79,6 +79,26 @@ Tab:AddDropdown({
     end
 })
 
+-- Or Grouped/Categorized Dropdown
+Tab:AddDropdown({
+    Name = "Select Option (Grouped)",
+    Options = {
+        {
+            Group = "Melee Weapons",
+            Items = {"Fists", "Combat", "Superhuman"}
+        },
+        {
+            Group = "Swords",
+            Items = {"Katana", "Saber"}
+        }
+    },
+    Default = "Fists",
+    Searchable = true,
+    Callback = function(selected)
+        print("Selected:", selected)
+    end
+})
+
 Tab:AddSlider({
     Name = "Speed",
     Min = 0,
@@ -190,6 +210,26 @@ Tab:AddDropdown({
     Options = {"ตัวเลือก A", "ตัวเลือก B", "ตัวเลือก C"},
     Searchable = true, -- เปิดการค้นหา
     Multi = false, -- ใส่ true เพื่อเลือกหลายตัว
+    Callback = function(selected)
+        print("เลือก:", selected)
+    end
+})
+
+-- หรือตัวเลือกแบบจัดหมวดหมู่ (Grouped Dropdown)
+Tab:AddDropdown({
+    Name = "เลือกตัวเลือก (แบ่งกลุ่ม)",
+    Options = {
+        {
+            Group = "อาวุธระยะประชิด",
+            Items = {"หมัด", "ดาบสั้น"}
+        },
+        {
+            Group = "ผลปีศาจ",
+            Items = {"ผลแสง", "ผลมังกร"}
+        }
+    },
+    Default = "หมัด",
+    Searchable = true,
     Callback = function(selected)
         print("เลือก:", selected)
     end

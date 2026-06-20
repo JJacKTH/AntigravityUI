@@ -31,7 +31,16 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
             end
         end
     else
-        self.Value = self.Default or (self.Options[1] or "")
+        local firstOption = ""
+        if #self.Options > 0 then
+            if type(self.Options[1]) == "table" and self.Options[1].Group then
+                local firstGroupItems = self.Options[1].Items or {}
+                firstOption = firstGroupItems[1] or ""
+            else
+                firstOption = self.Options[1] or ""
+            end
+        end
+        self.Value = self.Default or firstOption
     end
     
     -- Helper methods (defined early for use during UI creation)
@@ -213,6 +222,7 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     
     -- Option items storage
     self.OptionButtons = {}
+    self.GroupHeaders = {}
     
     -- Create options
     local function createOption(optionText)
@@ -329,10 +339,75 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         return optBtn
     end
     
-    -- Populate options
-    for _, opt in ipairs(self.Options) do
-        createOption(opt)
+    -- Populate options helper
+    local function populateOptions(optionsList)
+        -- Clear existing
+        for _, optData in pairs(self.OptionButtons) do
+            if optData.Button then
+                optData.Button:Destroy()
+            end
+        end
+        self.OptionButtons = {}
+        
+        for _, header in ipairs(self.GroupHeaders) do
+            if header.Frame then
+                header.Frame:Destroy()
+            end
+        end
+        self.GroupHeaders = {}
+        
+        -- Check if grouped
+        local isGrouped = false
+        if #optionsList > 0 and type(optionsList[1]) == "table" and optionsList[1].Group then
+            isGrouped = true
+        end
+        
+        if isGrouped then
+            for _, groupData in ipairs(optionsList) do
+                local groupName = groupData.Group
+                local items = groupData.Items or {}
+                
+                -- Create Group Header
+                local groupFrame = Instance.new("Frame")
+                groupFrame.Name = "GroupHeader_" .. groupName
+                groupFrame.Size = UDim2.new(1, -4, 0, 22)
+                groupFrame.BackgroundTransparency = 1
+                groupFrame.ZIndex = 102
+                groupFrame.Parent = self.OptionsList
+                
+                local groupLabel = Instance.new("TextLabel")
+                groupLabel.Name = "Label"
+                groupLabel.Size = UDim2.new(1, -10, 1, 0)
+                groupLabel.Position = UDim2.new(0, 8, 0, 0)
+                groupLabel.BackgroundTransparency = 1
+                groupLabel.Text = groupName:upper()
+                groupLabel.TextColor3 = Theme.Current.Accent
+                groupLabel.TextSize = 10
+                groupLabel.Font = Enum.Font.GothamBold
+                groupLabel.TextXAlignment = Enum.TextXAlignment.Left
+                groupLabel.ZIndex = 103
+                groupLabel.Parent = groupFrame
+                
+                table.insert(self.GroupHeaders, {
+                    Frame = groupFrame,
+                    GroupName = groupName,
+                    Items = items
+                })
+                
+                for _, opt in ipairs(items) do
+                    createOption(opt)
+                    self.OptionButtons[opt].GroupName = groupName
+                end
+            end
+        else
+            for _, opt in ipairs(optionsList) do
+                createOption(opt)
+            end
+        end
     end
+    
+    -- Populate options
+    populateOptions(self.Options)
     
     -- Update canvas size
     optionsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -344,9 +419,23 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         self.SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
             local searchText = self.SearchBox.Text:lower()
             
+            -- Update option buttons visibility
             for optText, optData in pairs(self.OptionButtons) do
                 local visible = searchText == "" or optText:lower():find(searchText, 1, true)
                 optData.Button.Visible = visible
+            end
+            
+            -- Update group headers visibility
+            for _, groupHeader in ipairs(self.GroupHeaders) do
+                local groupVisible = false
+                for _, optText in ipairs(groupHeader.Items) do
+                    local optData = self.OptionButtons[optText]
+                    if optData and optData.Button.Visible then
+                        groupVisible = true
+                        break
+                    end
+                end
+                groupHeader.Frame.Visible = groupVisible
             end
         end)
     end
@@ -388,13 +477,16 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         self.Container.ZIndex = 110
         self.ListContainer.Visible = true
         
-        local optCount = 0
+        local totalElementsHeight = 0
         for _ in pairs(self.OptionButtons) do
-            optCount = optCount + 1
+            totalElementsHeight = totalElementsHeight + 27
+        end
+        for _ in ipairs(self.GroupHeaders) do
+            totalElementsHeight = totalElementsHeight + 22
         end
         
         local searchOffset = self.Searchable and 30 or 0
-        local targetHeight = math.min(optCount * 27 + searchOffset + 6, 150)
+        local targetHeight = math.min(totalElementsHeight + searchOffset + 6, 200)
         
         if Animation then
             Animation:Play(self.ListContainer, {Size = UDim2.new(1, -20, 0, targetHeight)}, 0.2)
@@ -463,18 +555,8 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
     end
     
     function self:Refresh(newOptions)
-        -- Clear existing options
-        for _, optData in pairs(self.OptionButtons) do
-            optData.Button:Destroy()
-        end
-        self.OptionButtons = {}
-        
-        -- Create new options
         self.Options = newOptions or {}
-        for _, opt in ipairs(self.Options) do
-            createOption(opt)
-        end
-        
+        populateOptions(self.Options)
         self.SelectedLabel.Text = self:GetDisplayText()
     end
     

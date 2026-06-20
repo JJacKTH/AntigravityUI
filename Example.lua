@@ -79,6 +79,31 @@ MainTab:AddDropdown({
     end
 })
 
+-- Dropdown (Categorized): เลือก Weapon
+MainTab:AddDropdown({
+    Name = "Select Weapon (Grouped)",
+    Options = {
+        {
+            Group = "Melee Weapons",
+            Items = {"Fists", "Combat", "Dark Step", "Superhuman"}
+        },
+        {
+            Group = "Swords",
+            Items = {"Cutlass", "Katana", "Dual Katana", "Saber", "Cursed Dual Katana"}
+        },
+        {
+            Group = "Fruits",
+            Items = {"Rocket Fruit", "Spin Fruit", "Chop Fruit", "Light Fruit", "Dough Fruit"}
+        }
+    },
+    Default = "Fists",
+    Flag = "SelectedWeapon",
+    Searchable = true,
+    Callback = function(selected)
+        print("Selected Weapon:", selected)
+    end
+})
+
 -- Slider: ความเร็ว
 MainTab:AddSlider({
     Name = "Farm Speed",
