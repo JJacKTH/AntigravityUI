@@ -642,7 +642,7 @@ function AntigravityUI:CreateWindow(options)
         Window.FloatingIcon.BackgroundColor3 = Theme.Current.Background
         Window.FloatingIcon.BorderSizePixel = 0
         Window.FloatingIcon.Image = options.FloatingIcon.Image or "rbxassetid://94618813054930"
-        Window.FloatingIcon.ImageColor3 = Theme.Current.Accent
+        Window.FloatingIcon.ImageColor3 = options.FloatingIcon.ImageColor3 or Theme.Current.Accent
         Window.FloatingIcon.Visible = true
         Window.FloatingIcon.Parent = parent
         
