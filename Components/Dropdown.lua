@@ -466,8 +466,8 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
            input.UserInputType == Enum.UserInputType.Touch then
             if self.Open then
                 local mousePos = input.Position
-                local containerPos = self.Container.AbsolutePosition
-                local containerSize = self.Container.AbsoluteSize
+                local containerPos = self.Button.AbsolutePosition
+                local containerSize = self.Button.AbsoluteSize
                 local listSize = self.ListContainer.AbsoluteSize
                 
                 local totalHeight = containerSize.Y + listSize.Y
@@ -497,11 +497,41 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         local searchOffset = self.Searchable and 30 or 0
         local targetHeight = math.min(totalElementsHeight + searchOffset + 6, 200)
         
+        -- Parent to ScreenGui to display outside of container boundary
+        local screenGui = tab.Page:FindFirstAncestorOfClass("ScreenGui")
+        if screenGui then
+            self.ListContainer.Parent = screenGui
+            self.ListContainer.ZIndex = 100000
+        end
+
+        local function updateListPosition()
+            if not self.Open then return end
+            local btnPosition = self.Button.AbsolutePosition
+            local btnSize = self.Button.AbsoluteSize
+            local inset = Vector2.new(0, 0)
+            if screenGui and not screenGui.IgnoreGuiInset then
+                pcall(function()
+                    inset = game:GetService("GuiService"):GetGuiInset()
+                end)
+            end
+            self.ListContainer.Position = UDim2.new(0, btnPosition.X - inset.X, 0, btnPosition.Y + btnSize.Y + 2 - inset.Y)
+            self.ListContainer.Size = UDim2.new(0, btnSize.X, 0, self.ListContainer.Size.Y.Offset)
+        end
+        
+        updateListPosition()
+        
+        if not self.PositionConn then
+            self.PositionConn = self.Button:GetPropertyChangedSignal("AbsolutePosition"):Connect(updateListPosition)
+        end
+        if not self.SizeConn then
+            self.SizeConn = self.Button:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateListPosition)
+        end
+        
         if Animation then
-            Animation:Play(self.ListContainer, {Size = UDim2.new(1, -20, 0, targetHeight)}, 0.2)
+            Animation:Play(self.ListContainer, {Size = UDim2.new(0, self.Button.AbsoluteSize.X, 0, targetHeight)}, 0.2)
             Animation:Play(self.Arrow, {Rotation = 180}, 0.2)
         else
-            self.ListContainer.Size = UDim2.new(1, -20, 0, targetHeight)
+            self.ListContainer.Size = UDim2.new(0, self.Button.AbsoluteSize.X, 0, targetHeight)
             self.Arrow.Rotation = 180
         end
         
@@ -515,17 +545,27 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         self.Open = false
         self.Container.ZIndex = 2
         
+        if self.PositionConn then
+            self.PositionConn:Disconnect()
+            self.PositionConn = nil
+        end
+        if self.SizeConn then
+            self.SizeConn:Disconnect()
+            self.SizeConn = nil
+        end
+        
         if Animation then
-            Animation:Play(self.ListContainer, {Size = UDim2.new(1, -20, 0, 0)}, 0.2)
+            Animation:Play(self.ListContainer, {Size = UDim2.new(0, self.Button.AbsoluteSize.X, 0, 0)}, 0.2)
             Animation:Play(self.Arrow, {Rotation = 0}, 0.2)
         else
-            self.ListContainer.Size = UDim2.new(1, -20, 0, 0)
+            self.ListContainer.Size = UDim2.new(0, self.Button.AbsoluteSize.X, 0, 0)
             self.Arrow.Rotation = 0
         end
         
         task.delay(0.2, function()
             if not self.Open then
                 self.ListContainer.Visible = false
+                self.ListContainer.Parent = self.Container
             end
         end)
     end
@@ -573,8 +613,17 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
         if self.ClickConnection then
             self.ClickConnection:Disconnect()
         end
+        if self.PositionConn then
+            self.PositionConn:Disconnect()
+        end
+        if self.SizeConn then
+            self.SizeConn:Disconnect()
+        end
         if ConfigHandler and self.Flag then
             ConfigHandler:Unregister(self.Flag)
+        end
+        if self.ListContainer then
+            self.ListContainer:Destroy()
         end
         self.Container:Destroy()
     end
