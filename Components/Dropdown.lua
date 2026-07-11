@@ -466,14 +466,17 @@ function Dropdown.new(tab, options, Theme, Animation, ConfigHandler)
            input.UserInputType == Enum.UserInputType.Touch then
             if self.Open then
                 local mousePos = input.Position
-                local containerPos = self.Button.AbsolutePosition
-                local containerSize = self.Button.AbsoluteSize
+                local btnPos = self.Button.AbsolutePosition
+                local btnSize = self.Button.AbsoluteSize
+                local listPos = self.ListContainer.AbsolutePosition
                 local listSize = self.ListContainer.AbsoluteSize
-                
-                local totalHeight = containerSize.Y + listSize.Y
-                
-                if mousePos.X < containerPos.X or mousePos.X > containerPos.X + containerSize.X or
-                   mousePos.Y < containerPos.Y or mousePos.Y > containerPos.Y + totalHeight then
+
+                local inBtn = mousePos.X >= btnPos.X and mousePos.X <= btnPos.X + btnSize.X
+                    and mousePos.Y >= btnPos.Y and mousePos.Y <= btnPos.Y + btnSize.Y
+                local inList = mousePos.X >= listPos.X and mousePos.X <= listPos.X + listSize.X
+                    and mousePos.Y >= listPos.Y and mousePos.Y <= listPos.Y + listSize.Y
+
+                if not inBtn and not inList then
                     self:Close()
                 end
             end
