@@ -313,8 +313,9 @@ function ConfigManager:CreateHandler(gameName, configName, autoSave, autoLoad, b
     end
     
     -- Auto load on creation if enabled
+    -- task.delay(0) ensures all components finish Register() before Load() applies values
     if autoLoad and ConfigManager:Exists(configName or "Config") then
-        task.defer(function()
+        task.delay(0, function()
             handler:Load()
         end)
     end

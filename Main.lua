@@ -349,8 +349,11 @@ function AntigravityUI:CreateWindow(options)
     
     local UserInputService = game:GetService("UserInputService")
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed and Window.ToggleKey and input.KeyCode == Window.ToggleKey then
-            Window:Toggle(true) -- Pass true to indicate keybind toggle (center it)
+        if Window.ToggleKey and input.KeyCode == Window.ToggleKey then
+            -- Avoid toggling UI when typing in text fields
+            if not UserInputService:GetFocusedTextBox() then
+                Window:Toggle(true) -- Pass true to indicate keybind toggle (center it)
+            end
         end
     end)
 
